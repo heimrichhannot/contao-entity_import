@@ -1,0 +1,39 @@
+{
+	"name": "heimrichhannot/contao-entity_import",
+	"description": "A backend only module, to migrate items from one database into another (experts only).",
+	"keywords": [
+		"contao",
+		"import"
+	],
+	"type": "contao-module",
+	"homepage": "https://github.com/heimrichhannot/contao-entity_import",
+	"license": "LGPL-3.0+",
+	"authors": [
+		{
+			"name": "Heimrich & Hannot",
+			"email": "digitales@heimrich-hannot.de",
+			"homepage": "http://www.heimrich-hannot.de",
+			"role": "Developer"
+		}
+	],
+	"support": {
+		"issues": "https://github.com/heimrichhannot/contao-entity_import/issues"
+	},
+	"require": {
+		"contao/core": ">=3.3,<4-dev",
+		"heimrichhannot/contao-haste_plus": ">=1.0.3",
+		"sunra/php-simple-html-dom-parser": "v1.5.0"
+	},
+	"autoload": {
+		"classmap": [
+			""
+		]
+	},
+	"extra": {
+		"contao": {
+			"sources": {
+				"": "system/modules/entity_import"
+			}
+		}
+	}
+}
