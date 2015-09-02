@@ -284,34 +284,4 @@ class tl_entity_import extends Backend
 		return $label;
 	}
 
-	/**
-	 * Add the type of input field
-	 * @param array
-	 * @return string
-	 */
-	public function listEntityImportConfigs($arrRow)
-	{
-//		if ($row['start'] || $row['end']) {
-//			$label .= '&nbsp;<strong>[';
-//
-//			if ($row['start']) {
-//				$label .= $GLOBALS['TL_LANG']['tl_entity_import']['start'][0] . ': ' . \Date::parse($GLOBALS['TL_CONFIG']['datimFormat'], $row['start']);
-//
-//				if ($row['end']) {
-//					$label .= '&nbsp;-&nbsp;';
-//				}
-//			}
-//
-//			if ($row['end']) {
-//				$label .= $GLOBALS['TL_LANG']['tl_entity_import']['end'][0] . ': ' . \Date::parse($GLOBALS['TL_CONFIG']['datimFormat'], $row['end']);
-//			}
-//
-//			$label .= ']</strong>';
-//		}
-//
-//		return $label;
-
-		return '<div class="tl_content_left">' . $arrRow['title'] . ' <span style="color:#b3b3b3;padding-left:3px">[' . Date::parse(Config::get('datimFormat'), $arrRow['date']) . ']</span></div>';
-	}
-
 }

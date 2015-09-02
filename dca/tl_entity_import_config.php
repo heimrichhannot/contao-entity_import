@@ -437,7 +437,7 @@ class tl_entity_import_config extends \Backend
 
 	public function listEntityImportConfig($arrRow)
 	{
-		$strText = $arrRow['description'] ? '<span style="color:#b3b3b3;padding-left:3px"> [' . $arrRow . '] </span>' : '';
+		$strText = $arrRow['description'] ? '<span style="color:#b3b3b3;padding-left:3px"> [' . $arrRow['description'] . '] </span>' : '';
 
 		return '<div class="tl_content_left">' . $arrRow['title'] . $strText . '</div>';
 	}
