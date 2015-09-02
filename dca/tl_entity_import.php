@@ -151,7 +151,7 @@ $GLOBALS['TL_DCA']['tl_entity_import'] = array
 		'dbPass'     => array
 		(
 			'exclude'   => true,
-			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import']['dbUser'],
+			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import']['dbPass'],
 			'inputType' => 'text',
 			'eval'      => array('maxlength' => 64, 'tl_class' => 'w50'),
 			'sql'       => "varchar(64) NOT NULL default ''"

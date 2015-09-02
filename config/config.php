@@ -15,3 +15,10 @@ $GLOBALS['BE_MOD']['devtools']['entity_import'] = array
  */
 $GLOBALS['TL_MODELS']['tl_entity_import'] = 'HeimrichHannot\EntityImport\EntityImportModel';
 $GLOBALS['TL_MODELS']['tl_entity_import_config'] = 'HeimrichHannot\EntityImport\EntityImportConfigModel';
+
+/**
+ * Hooks
+ */
+$GLOBALS['TL_HOOKS']['initEntityImportPalettes'] = array(
+	'initNewsPalette' => array('tl_entity_import_config', 'initNewsPalette')
+);

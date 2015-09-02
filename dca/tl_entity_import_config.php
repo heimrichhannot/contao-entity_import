@@ -20,7 +20,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = array
 				'pid' => 'index',
 			)
 		),
-		'onload_callback'  => array('tl_entity_import_config', 'initPalette')
+		'onload_callback'  => array(array('tl_entity_import_config', 'initPalette'))
 	),
 
 	// List
@@ -92,8 +92,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = array
 	'palettes'    => array
 	(
 		'__selector__' => array('type'),
-		'default'      => '{title_legend},title,description;{config_legend},dbSourceTable,dbTargetTable,importerClass,dbFieldMapping,start,end,whereClause,sourceDir,targetDir;{category_legend},catContao',
-		//		'tt_news'      => '{title_legend},title,table;{config_legend},pids,start,end,folder;{news_legend},newsArchive;{category_legend},catTypo,catContao',
+		'default'      => '{title_legend},title,description;{config_legend},dbSourceTable,dbTargetTable,importerClass,dbFieldMapping,start,end,whereClause,sourceDir,targetDir;',
 	),
 
 	// Subpalettes
@@ -165,7 +164,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = array
 		),
 		'dbFieldMapping' => array
 		(
-			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['slick_responsive'],
+			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping'],
 			'inputType' => 'multiColumnWizard',
 			'exclude'   => true,
 			'eval'      => array
@@ -178,6 +177,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = array
 						'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['type'],
 						'inputType' => 'select',
 						'options'   => array('source', 'value'),
+						'reference' => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMappingOptions'],
 						'eval'      => array
 						(
 							'style' => 'width:150px',
@@ -278,7 +278,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = array
 		),
 		'catContao'   => array
 		(
-			'label'            => &$GLOBALS['TL_LANG']['tl_member']['catContao'],
+			'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['catContao'],
 			'exclude'          => true,
 			'inputType'        => 'treePicker',
 			'foreignKey'       => 'tl_news_category.title',
@@ -291,6 +291,34 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = array
 
 class tl_entity_import_config extends \Backend
 {
+	public static function initPalette()
+	{
+		$objEntityImportConfig = \HeimrichHannot\EntityImport\EntityImportConfigModel::findByPk(\Input::get('id'));
+		$arrDca = &$GLOBALS['TL_DCA']['tl_entity_import_config'];
+
+		// HOOK: add custom logic
+		if (isset($GLOBALS['TL_HOOKS']['initEntityImportPalettes']) && is_array($GLOBALS['TL_HOOKS']['initEntityImportPalettes']))
+		{
+			foreach ($GLOBALS['TL_HOOKS']['initEntityImportPalettes'] as $arrCallback)
+			{
+				if (($objCallback = \Controller::importStatic($arrCallback[0])) !== null)
+				{
+					$objCallback->{$arrCallback[1]}($objEntityImportConfig, $arrDca);
+				}
+			}
+		}
+	}
+
+	public static function initNewsPalette($objEntityImportConfig, &$arrDca)
+	{
+		switch ($objEntityImportConfig->dbTargetTable)
+		{
+			case 'tl_news':
+				$arrDca['palettes']['default'] .= '{category_legend},catContao';
+				break;
+		}
+	}
+
 	public function getSourceFields($dc)
 	{
 		$arrOptions = array();
@@ -316,6 +344,9 @@ class tl_entity_import_config extends \Backend
 	public function getTargetFields($dc)
 	{
 		$arrOptions = array();
+
+		if (!$dc->activeRecord->dbTargetTable)
+			return $arrOptions;
 
 		$arrFields = \Database::getInstance()->listFields($dc->activeRecord->dbTargetTable);
 
@@ -426,6 +457,8 @@ class tl_entity_import_config extends \Backend
 				$arrOptions[$strName] = $strName;
 			}
 		}
+
+		sort($arrOptions);
 
 		return $arrOptions;
 	}
