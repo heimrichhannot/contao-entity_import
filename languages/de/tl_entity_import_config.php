@@ -39,6 +39,8 @@ $GLOBALS['TL_LANG']['tl_entity_import_config']['whereClause']		= array('WHERE-Be
 $GLOBALS['TL_LANG']['tl_entity_import_config']['sourceDir']			= array('Quellverzeichnis', 'Wählen Sie hier das Quellverzeichnis für Dateiimporte aus.');
 $GLOBALS['TL_LANG']['tl_entity_import_config']['targetDir']			= array('Zielverzeichnis', 'Wählen Sie hier das Zielverzeichnis für Dateiimporte aus.');
 $GLOBALS['TL_LANG']['tl_entity_import_config']['catContao']			= array('Nachrichten-Kategorien', 'Wählen Sie hier die Kategorien aus, die den importierten Nachrichten zugewiesen werden sollen.');
+$GLOBALS['TL_LANG']['tl_entity_import_config']['newsArchive']		= array('Nachrichtenarchiv', 'Wählen Sie hier das Nachrichtenarchiv aus, in das die Nachrichten importiert werden sollen.');
+
 
 /**
  * Legends
