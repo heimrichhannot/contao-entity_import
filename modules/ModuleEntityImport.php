@@ -62,11 +62,17 @@ class ModuleEntityImport extends \BackendModule
 				$importer = new Importer($objModel);
 			}
 
-			if ($importer->run()) {
+			if ($importer->run(\Input::post('dry-run'))) {
 				// Confirm and reload
-				\Message::addConfirmation(
-					$GLOBALS['TL_LANG']['tl_entity_import_config']['confirm']
-				);
+				$strMessage = $GLOBALS['TL_LANG']['tl_entity_import_config']['confirm'];
+
+				if(\Input::post('dry-run'))
+				{
+					$strMessage = $GLOBALS['TL_LANG']['tl_entity_import_config']['confirmDry'];
+				}
+
+				\Message::addConfirmation($strMessage);
+
 				\Controller::reload();
 			}
 		}
@@ -82,6 +88,9 @@ class ModuleEntityImport extends \BackendModule
 		$this->Template->message = \Message::generate();
 		$this->Template->submit = specialchars(
 			$GLOBALS['TL_LANG']['tl_entity_import_config']['import'][0]
+		);
+		$this->Template->dryRun = specialchars(
+			$GLOBALS['TL_LANG']['tl_entity_import_config']['dryRun'][0]
 		);
 		$this->Template->headline = sprintf(
 			$GLOBALS['TL_LANG']['tl_entity_import_config']['headline'],

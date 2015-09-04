@@ -22,6 +22,8 @@ class Importer extends \Backend
 
 	protected $arrDbTargetFields = array();
 
+	protected $dryRun = false;
+
 	public function __construct($objModel)
 	{
 		if ($objModel instanceof \Model) {
@@ -96,8 +98,10 @@ class Importer extends \Backend
 	 *
 	 * @return bool
 	 */
-	public function run()
+	public function run($dry = false)
 	{
+		$this->dryRun = $dry;
+
 		$this->collectItems();
 
 		if ($this->objItems === null) {
@@ -135,11 +139,18 @@ class Importer extends \Backend
 				continue;
 			}
 
+			// do not save in dry run
+			if($this->dryRun) continue;
+
 			$objItem->save();
 		}
 
-		// do after item has been created,
-		$this->runAfterSaving($objItem, $objSourceItem);
+
+		// do after item has been created, no in dry mode
+		if(!$this->dryRun)
+		{
+			$this->runAfterSaving($objItem, $objSourceItem);
+		}
 
 		return $objItem;
 	}
@@ -226,7 +237,7 @@ class Importer extends \Backend
 	{
 		$t = $this->dbSourceTable;
 
-		$strQuery = "SELECT " . implode(', ', $this->arrNamedMapping) . " FROM $t";
+		$strQuery = "SELECT *, " . implode(', ', $this->arrNamedMapping) . " FROM $t";
 
 		if ($this->whereClause) {
 			$strQuery .= " WHERE " . $this->whereClause;

@@ -117,7 +117,7 @@ class NewsImporter extends Importer
 
 			$objContent->text = $this->stripAttributes($objContent->text, array('style', 'class', 'id'));
 
-			$objContent->ptable  = static::$strTable;
+			$objContent->ptable  = $this->dbTargetTable;
 			$objContent->pid     = $objItem->id;
 			$objContent->sorting = 16;
 			$objContent->tstamp  = time();
@@ -143,12 +143,13 @@ class NewsImporter extends Importer
 
 	public function stripAttributes($html, $attribs)
 	{
-		$dom = \voku\helper\HtmlDomParser::str_get_html($html);
+		$dom = \Sunra\PhpSimple\HtmlDomParser::str_get_html($html);
 		foreach ($attribs as $attrib) {
 			foreach ($dom->find("*[$attrib]") as $e) {
 				$e->$attrib = null;
 			}
 		}
+
 		$dom->load($dom->save());
 
 		return $dom->save();
@@ -218,6 +219,13 @@ class NewsImporter extends Importer
 
 	protected function createImportMessage($objItem)
 	{
-		\Message::addConfirmation('Successfully imported news: "' . $objItem->headline . '"');
+		$strMessage = $GLOBALS['TL_LANG']['tl_entity_import_config']['newsImport'];
+
+		if($this->dryRun)
+		{
+			$strMessage = $GLOBALS['TL_LANG']['tl_entity_import_config']['newsDry'];
+		}
+
+		\Message::addConfirmation(sprintf($strMessage, $objItem->headline));
 	}
 }

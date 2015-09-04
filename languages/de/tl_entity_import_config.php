@@ -5,6 +5,8 @@
  */
 $GLOBALS['TL_LANG']['tl_entity_import_config']['import'][0] = 'Import ausführen';
 $GLOBALS['TL_LANG']['tl_entity_import_config']['import'][1] = 'Import ID %s ausführen';
+$GLOBALS['TL_LANG']['tl_entity_import_config']['dryRun'][0] = 'Testlauf';
+$GLOBALS['TL_LANG']['tl_entity_import_config']['dryRun'][1] = 'Testlauf ID %s ausführen';
 $GLOBALS['TL_LANG']['tl_entity_import_config']['headline'] = 'Import ID %s';
 $GLOBALS['TL_LANG']['tl_entity_import_config']['label'] = 'Klicken Sie &quot;Import ausführen&quot;, um den Importprozess zu starten.';
 
@@ -33,6 +35,7 @@ $GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMappingOptions']['value']
 $GLOBALS['TL_LANG']['tl_entity_import_config']['source']			= array('Quellfeld', 'Wählen Sie hier nur dann ein Feld aus, wenn Sie als Typ \'Quellfeld\' gewählt haben.');
 $GLOBALS['TL_LANG']['tl_entity_import_config']['value']				= array('Wert', 'Geben Sie hier nur dann einen Wert ein, wenn Sie als Typ \'Wert\' gewählt haben.');
 $GLOBALS['TL_LANG']['tl_entity_import_config']['target']			= array('Zielfeld', 'Wählen Sie hier das Feld in der Zieltabelle aus, in das importiert werden soll.');
+$GLOBALS['TL_LANG']['tl_entity_import_config']['useTimeInterval']	= array('Zeitraum angeben', 'Geben Sie einen Zeitraum an.');
 $GLOBALS['TL_LANG']['tl_entity_import_config']['start']				= array('Startzeit', 'Wählen Sie hier die Startzeit eines temporalen Filters aus.');
 $GLOBALS['TL_LANG']['tl_entity_import_config']['end']				= array('Endzeit', 'Wählen Sie hier die Endzeit eines temporalen Filters aus.');
 $GLOBALS['TL_LANG']['tl_entity_import_config']['whereClause']		= array('WHERE-Bedingungen', 'Geben Sie hier Bedingungen für die WHERE-Klausel in der Form "pid=27 AND id=1" ein.');
@@ -58,4 +61,7 @@ $GLOBALS['TL_LANG']['tl_entity_import_config']['createNewContentElement'] = '&lt
  * Messages
  */
 $GLOBALS['TL_LANG']['tl_entity_import_config']['confirm'] = 'Der Import wurde erfolgreich abgeschlossen.';
+$GLOBALS['TL_LANG']['tl_entity_import_config']['confirmDry'] = 'Der Import wurde erfolgreich geprüft.';
 $GLOBALS['TL_LANG']['tl_entity_import_config']['importerInfo'] = 'Für das Importieren wird die Klasse "%s" verwendet.';
+$GLOBALS['TL_LANG']['tl_entity_import_config']['newsDry'] = 'Trockenlauf: Nachricht "%s" wird beim Import bearbeitet.';
+$GLOBALS['TL_LANG']['tl_entity_import_config']['newsImport'] = 'Nachricht "%s" wurde erfolgreich importiert.';

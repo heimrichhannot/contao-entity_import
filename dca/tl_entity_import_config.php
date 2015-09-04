@@ -90,30 +90,32 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = array
 	// Palettes
 	'palettes'    => array
 	(
-		'__selector__' => array('type'),
-		'default'      => '{title_legend},title,description;{config_legend},dbSourceTable,dbTargetTable,importerClass,dbFieldMapping,start,end,whereClause,sourceDir,targetDir;',
+		'__selector__' => array('type', 'useTimeInterval'),
+		'default'      => '{title_legend},title,description;{config_legend},dbSourceTable,dbTargetTable,importerClass,dbFieldMapping,useTimeInterval,whereClause,sourceDir,targetDir;',
 	),
 	// Subpalettes
 	'subpalettes' => array
-	(),
+	(
+		'useTimeInterval' => 'start,end'
+	),
 	// Fields
 	'fields'      => array
 	(
-		'id'             => array
+		'id'              => array
 		(
 			'sql' => "int(10) unsigned NOT NULL auto_increment",
 		),
-		'pid'            => array
+		'pid'             => array
 		(
 			'foreignKey' => 'tl_entity_import.title',
 			'sql'        => "int(10) unsigned NOT NULL default '0'",
 			'relation'   => array('type' => 'belongsTo', 'load' => 'eager'),
 		),
-		'tstamp'         => array
+		'tstamp'          => array
 		(
 			'sql' => "int(10) unsigned NOT NULL default '0'",
 		),
-		'title'          => array
+		'title'           => array
 		(
 			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['title'],
 			'search'    => true,
@@ -122,7 +124,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = array
 			'eval'      => array('mandatory' => true, 'maxlength' => 64, 'tl_class' => 'w50'),
 			'sql'       => "varchar(64) NOT NULL default ''",
 		),
-		'description'    => array
+		'description'     => array
 		(
 			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['description'],
 			'search'    => true,
@@ -131,7 +133,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = array
 			'eval'      => array('maxlength' => 255, 'tl_class' => 'long clr'),
 			'sql'       => "varchar(255) NOT NULL default ''",
 		),
-		'dbSourceTable'  => array
+		'dbSourceTable'   => array
 		(
 			'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbSourceTable'],
 			'search'           => true,
@@ -141,7 +143,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = array
 			'options_callback' => array('tl_entity_import_config', 'getSourceTables'),
 			'sql'              => "varchar(255) NOT NULL default ''",
 		),
-		'dbTargetTable'  => array
+		'dbTargetTable'   => array
 		(
 			'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbTargetTable'],
 			'search'           => true,
@@ -151,7 +153,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = array
 			'options_callback' => array('tl_entity_import_config', 'getTargetTables'),
 			'sql'              => "varchar(255) NOT NULL default ''",
 		),
-		'importerClass'  => array
+		'importerClass'   => array
 		(
 			'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['importerClass'],
 			'inputType'        => 'select',
@@ -159,7 +161,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = array
 			'options_callback' => array('tl_entity_import_config', 'getImporterClasses'),
 			'sql'              => "varchar(255) NOT NULL default ''",
 		),
-		'dbFieldMapping' => array
+		'dbFieldMapping'  => array
 		(
 			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping'],
 			'inputType' => 'multiColumnWizard',
@@ -223,7 +225,15 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = array
 		//			'options_callback' => array('tl_entity_import_config', 'getPidsFromTable'),
 		//			'sql'              => "blob NULL",
 		//		),
-		'start'          => array
+		'useTimeInterval' => array
+		(
+			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['useTimeInterval'],
+			'exclude'   => true,
+			'inputType' => 'checkbox',
+			'eval'      => array('submitOnChange' => true),
+			'sql'       => "char(1) NOT NULL default ''",
+		),
+		'start'           => array
 		(
 			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['start'],
 			'inputType' => 'text',
@@ -231,7 +241,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = array
 			'eval'      => array('rgxp' => 'datim', 'tl_class' => 'w50', 'datepicker' => true),
 			'sql'       => "int(10) unsigned NULL",
 		),
-		'end'            => array
+		'end'             => array
 		(
 			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['end'],
 			'inputType' => 'text',
@@ -239,7 +249,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = array
 			'eval'      => array('rgxp' => 'datim', 'tl_class' => 'w50', 'datepicker' => true),
 			'sql'       => "int(10) unsigned NULL",
 		),
-		'whereClause'    => array
+		'whereClause'     => array
 		(
 			'label'       => &$GLOBALS['TL_LANG']['tl_entity_import_config']['whereClause'],
 			'inputType'   => 'textarea',
@@ -248,7 +258,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = array
 			'explanation' => 'insertTags',
 			'sql'         => "text NULL",
 		),
-		'sourceDir'      => array
+		'sourceDir'       => array
 		(
 			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['sourceDir'],
 			'inputType' => 'fileTree',
@@ -256,7 +266,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = array
 			'eval'      => array('files' => false, 'fieldType' => 'radio', 'tl_class' => 'w50'),
 			'sql'       => "binary(16) NULL",
 		),
-		'targetDir'      => array
+		'targetDir'       => array
 		(
 			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['targetDir'],
 			'inputType' => 'fileTree',
@@ -264,7 +274,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = array
 			'eval'      => array('files' => false, 'fieldType' => 'radio', 'tl_class' => 'w50'),
 			'sql'       => "binary(16) NULL",
 		),
-		'catTypo'        => array
+		'catTypo'         => array
 		(
 			'label'            => &$GLOBALS['TL_LANG']['tl_member']['catTypo'],
 			'exclude'          => true,
@@ -273,29 +283,21 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = array
 			'options_callback' => array('tl_entity_import_config', 'getTypoCategories'),
 			'sql'              => "blob NULL",
 		),
-		'catContao'      => array
+		'catContao'       => array
 		(
 			'label'      => &$GLOBALS['TL_LANG']['tl_entity_import_config']['catContao'],
 			'exclude'    => true,
 			'inputType'  => 'treePicker',
 			'foreignKey' => 'tl_news_category.title',
-			'eval'       => array('multiple'     => true,
-								  'fieldType'    => 'checkbox',
-								  'foreignTable' => 'tl_news_category',
-								  'titleField'   => 'title',
-								  'searchField'  => 'title',
-								  'managerHref'  => 'do=news&table=tl_news_category',
+			'eval'       => array(
+				'multiple'     => true,
+				'fieldType'    => 'checkbox',
+				'foreignTable' => 'tl_news_category',
+				'titleField'   => 'title',
+				'searchField'  => 'title',
+				'managerHref'  => 'do=news&table=tl_news_category',
 			),
 			'sql'        => "blob NULL",
-		),
-		'newsArchive'    => array
-		(
-			'label'      => &$GLOBALS['TL_LANG']['tl_entity_import_config']['newsArchive'],
-			'inputType'  => 'select',
-			'exclude'    => true,
-			'eval'       => array('mandatory' => true, 'submitOnChange' => true, 'tl_class' => 'w50'),
-			'foreignKey' => 'tl_news_archive.title',
-			'sql'        => "int(10) unsigned NULL",
 		),
 	),
 );
@@ -322,7 +324,6 @@ class tl_entity_import_config extends \Backend
 	{
 		switch ($objEntityImportConfig->dbTargetTable) {
 			case 'tl_news':
-				$arrDca['palettes']['default'] = str_replace('importerClass', 'importerClass, newsArchive', $arrDca['palettes']['default']);
 				$arrDca['palettes']['default'] .= '{category_legend},catContao';
 				break;
 		}
@@ -374,9 +375,6 @@ class tl_entity_import_config extends \Backend
 
 		foreach ($arrFields as $arrField) {
 			if (in_array($arrField['type'], array('index'))) {
-				continue;
-			}
-			if ($arrField['name'] == 'pid') {
 				continue;
 			}
 
