@@ -10,8 +10,10 @@ class DatabaseImporter extends Importer
 	 *
 	 * @return bool
 	 */
-	public function run()
+	public function run($dry = false)
 	{
+		$this->dryRun = $dry;
+
 		$this->collectItems();
 
 		if ($this->objItems === null) {
@@ -47,14 +49,18 @@ class DatabaseImporter extends Importer
 			}
 		}
 
-		$strQuery = "INSERT INTO $t (" . implode(',', array_keys($arrItem)) . ") VALUES(" . implode(',', array_map(function($val) { return "'" . $val . "'"; }, array_values($arrItem))) . ")";
+		if (!$this->dryRun)
+		{
+			$strQuery = "INSERT INTO $t (" . implode(',', array_keys($arrItem)) . ") VALUES(" . implode(',', array_map(function($val) { return "'" . $val . "'"; }, array_values($arrItem))) . ")";
 
-		$arrItem['id'] = $objDatabase->execute($strQuery)->insertId;
+			$arrItem['id'] = $objDatabase->execute($strQuery)->insertId;
 
-		// do after item has been created,
-		$this->runAfterSaving($arrItem, $objSourceItem);
+			// do after item has been created,
+			$this->runAfterSaving($arrItem, $objSourceItem);
+		}
 
 		return $arrItem;
 	}
 
 }
+
