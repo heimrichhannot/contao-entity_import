@@ -143,8 +143,7 @@ class NewsImporter extends Importer
 
 	public function stripAttributes($html, $attribs)
 	{
-		$dom = new \simple_html_dom();
-		$dom->load($html);
+		$dom = \voku\helper\HtmlDomParser::str_get_html($html);
 		foreach ($attribs as $attrib) {
 			foreach ($dom->find("*[$attrib]") as $e) {
 				$e->$attrib = null;
