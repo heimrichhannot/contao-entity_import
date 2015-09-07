@@ -90,13 +90,14 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = array
 	// Palettes
 	'palettes'    => array
 	(
-		'__selector__' => array('type', 'useTimeInterval'),
-		'default'      => '{title_legend},title,description;{config_legend},dbSourceTable,dbTargetTable,importerClass,dbFieldMapping,useTimeInterval,whereClause,sourceDir,targetDir;',
+		'__selector__' => array('type', 'useTimeInterval', 'purgeBeforeImport'),
+		'default'      => '{title_legend},title,description;{config_legend},dbSourceTable,dbTargetTable,importerClass,purgeBeforeImport,dbFieldMapping,useTimeInterval,whereClause,sourceDir,targetDir;',
 	),
 	// Subpalettes
 	'subpalettes' => array
 	(
-		'useTimeInterval' => 'start,end'
+		'useTimeInterval' => 'start,end',
+		'purgeBeforeImport' => 'whereClausePurge'
 	),
 	// Fields
 	'fields'      => array
@@ -160,6 +161,23 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = array
 			'eval'             => array('mandatory' => true, 'tl_class' => 'w50', 'decodeEntities' => true),
 			'options_callback' => array('tl_entity_import_config', 'getImporterClasses'),
 			'sql'              => "varchar(255) NOT NULL default ''",
+		),
+		'purgeBeforeImport' => array
+		(
+			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['purgeBeforeImport'],
+			'exclude'   => true,
+			'inputType' => 'checkbox',
+			'eval'      => array('submitOnChange' => true, 'tl_class' => 'w50'),
+			'sql'       => "char(1) NOT NULL default ''",
+		),
+		'whereClausePurge'     => array
+		(
+			'label'       => &$GLOBALS['TL_LANG']['tl_entity_import_config']['whereClausePurge'],
+			'inputType'   => 'textarea',
+			'exclude'     => true,
+			'eval'        => array('class' => 'monospace', 'rte' => 'ace', 'tl_class' => 'clr long'),
+			'explanation' => 'insertTags',
+			'sql'         => "text NULL",
 		),
 		'dbFieldMapping'  => array
 		(
@@ -254,7 +272,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = array
 			'label'       => &$GLOBALS['TL_LANG']['tl_entity_import_config']['whereClause'],
 			'inputType'   => 'textarea',
 			'exclude'     => true,
-			'eval'        => array('allowHtml' => true, 'class' => 'monospace', 'rte' => 'ace|html', 'helpwizard' => true),
+			'eval'        => array('class' => 'monospace', 'rte' => 'ace'),
 			'explanation' => 'insertTags',
 			'sql'         => "text NULL",
 		),

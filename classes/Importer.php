@@ -34,6 +34,11 @@ class Importer extends \Backend
 
 		parent::__construct();
 
+		if ($objModel->purgeBeforeImport && !$this->dryRun)
+		{
+			$this->purgeBeforeImport($objModel);
+		}
+
 		$this->arrData = $objModel->row();
 		$this->objParentModel = EntityImportModel::findByPk($this->objModel->pid);
 		$this->Database = Database::getInstance($this->objParentModel->row());
@@ -50,6 +55,14 @@ class Importer extends \Backend
 		});
 
 		$this->arrNamedMapping = $arrNamedMapping;
+	}
+
+	protected function purgeBeforeImport($objModel)
+	{
+		$strQuery = 'DELETE FROM ' . $objModel->dbTargetTable .
+			($objModel->whereClausePurge ? ' WHERE ' . $objModel->whereClausePurge : '');
+
+		\Database::getInstance()->execute($strQuery);
 	}
 
 	protected function getFieldMappingDbValue($arrSourceConfig, $arrTargetConfig)

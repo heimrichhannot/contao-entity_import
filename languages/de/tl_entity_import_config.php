@@ -28,6 +28,8 @@ $GLOBALS['TL_LANG']['tl_entity_import_config']['description']		= array('Beschrei
 $GLOBALS['TL_LANG']['tl_entity_import_config']['dbSourceTable']		= array('Quelltabelle', 'Wählen Sie hier die Tabelle aus, die als Quelle des Imports dienen soll.');
 $GLOBALS['TL_LANG']['tl_entity_import_config']['dbTargetTable']		= array('Zieltabelle', 'Wählen Sie hier die Tabelle aus, die als Ziel des Imports dienen soll.');
 $GLOBALS['TL_LANG']['tl_entity_import_config']['importerClass']		= array('Importerklasse', 'Wählen Sie hier die PHP-Klasse, die als Importer fungieren soll. Die Klasse muss eine Subklasse von "\\HeimrichHannot\\EntityImport\\Importer" sein.');
+$GLOBALS['TL_LANG']['tl_entity_import_config']['purgeBeforeImport']	= array('Datensätze in der Zieltabelle vor dem Import löschen', 'Wählen Sie diese Option, wenn in der Zieltabelle vor jedem Import Datensätze gelöscht werden sollen.');
+$GLOBALS['TL_LANG']['tl_entity_import_config']['whereClausePurge']	= array('WHERE-Bedingungen für das Löschen', 'Geben Sie hier SQL-Bedingungen in der Form "pid=27 AND id=1" ein, die für das Löschen von Datensätzen vor jedem Import gelten sollen.');
 $GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping']	= array('Felderabbildung', 'Wählen Sie hier aus, welche Felder der Quelltabelle auf welche der Zieltabelle abgebildet werden sollen.');
 $GLOBALS['TL_LANG']['tl_entity_import_config']['type']				= array('Typ', 'Wählen Sie \'Quellfeld\', um den Wert eines Feldes in der Quelltabelle in das entsprechende Feld der Zieltabelle zu schreiben. Für einfache Werte nutzen Sie \'Wert\'.');
 $GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMappingOptions']['source']	= 'Quellfeld';
