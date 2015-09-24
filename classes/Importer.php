@@ -341,7 +341,7 @@ class Importer extends \Backend
 				$arrMap[$arrConfig['target']] = $this->getFieldMappingDbValue($arrSrcDbConfig, $arrTargetDbConfig);
 			} else {
 				if ($arrConfig['type'] == 'value' && !empty($arrConfig['value'])) {
-					$arrMap[$arrConfig['target']] = (is_string($arrConfig['value']) ? '"' . $arrConfig['value'] . '"' : $arrConfig['value']);
+					$arrMap[$arrConfig['target']] = (is_string($arrConfig['value']) ? '"' . addslashes($arrConfig['value']) . '"' : $arrConfig['value']);
 				}
 			}
 		}
