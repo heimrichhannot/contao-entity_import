@@ -193,7 +193,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = array
 					(
 						'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['type'],
 						'inputType' => 'select',
-						'options'   => array('source', 'value'),
+						'options'   => array('source', 'foreignKey', 'value'),
 						'reference' => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMappingOptions'],
 						'eval'      => array
 						(

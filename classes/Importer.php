@@ -34,14 +34,13 @@ class Importer extends \Backend
 
 		parent::__construct();
 
-		if ($objModel->purgeBeforeImport && !$this->dryRun)
-		{
+		if ($objModel->purgeBeforeImport && !$this->dryRun) {
 			$this->purgeBeforeImport($objModel);
 		}
 
-		$this->arrData = $objModel->row();
-		$this->objParentModel = EntityImportModel::findByPk($this->objModel->pid);
-		$this->Database = Database::getInstance($this->objParentModel->row());
+		$this->arrData           = $objModel->row();
+		$this->objParentModel    = EntityImportModel::findByPk($this->objModel->pid);
+		$this->Database          = Database::getInstance($this->objParentModel->row());
 		$this->arrDbSourceFields = $this->Database->listFields($this->dbSourceTable);
 		$this->arrDbTargetFields = \Database::getInstance()->listFields($this->dbTargetTable);
 
@@ -50,9 +49,12 @@ class Importer extends \Backend
 		$arrNamedMapping = $this->arrMapping;
 
 		// name fields
-		array_walk($arrNamedMapping, function (&$value, $index) {
-			$value = $value . ' as ' . $index;
-		});
+		array_walk(
+			$arrNamedMapping,
+			function (&$value, $index) {
+				$value = $value . ' as ' . $index;
+			}
+		);
 
 		$this->arrNamedMapping = $arrNamedMapping;
 	}
@@ -60,18 +62,19 @@ class Importer extends \Backend
 	protected function purgeBeforeImport($objModel)
 	{
 		$strQuery = 'DELETE FROM ' . $objModel->dbTargetTable .
-			($objModel->whereClausePurge ? ' WHERE ' . $objModel->whereClausePurge : '');
+					($objModel->whereClausePurge ? ' WHERE ' . $objModel->whereClausePurge : '');
 
 		\Database::getInstance()->execute($strQuery);
 	}
 
-	protected function getFieldMappingDbValue($arrSourceConfig, $arrTargetConfig)
+	protected function getFieldMappingDbValue($arrSourceConfig, $arrTargetConfig, $strForeignKey='')
 	{
 		$t = $this->dbSourceTable;
 
 		$strValue = $arrSourceConfig['name'];
 
-		switch ($arrSourceConfig['type']) {
+		switch ($arrSourceConfig['type'])
+		{
 			case 'timestamp':
 				if ($arrTargetConfig['type'] == 'int') {
 					$strValue = "UNIX_TIMESTAMP($t.$strValue)";
@@ -80,7 +83,15 @@ class Importer extends \Backend
 			default:
 				$strValue = $this->dbSourceTable . '.' . $strValue;
 		}
-
+		
+		if($strForeignKey != '' && preg_match('#(?<PK>.*)=(?<TABLE>.*)[.](?<COLUMN>.*)#', \StringUtil::decodeEntities($strForeignKey), $arrForeignKey))
+		{
+			if(isset($arrForeignKey['PK']) && ($arrForeignKey['TABLE']) && ($arrForeignKey['COLUMN']))
+			{
+				$strValue = sprintf("(SELECT %s FROM %s WHERE %s=%s)", $arrForeignKey['COLUMN'], $arrForeignKey['TABLE'], $arrForeignKey['PK'], $strValue);
+			}
+		}
+		
 		return $strValue;
 	}
 
@@ -144,7 +155,7 @@ class Importer extends \Backend
 		$dca = $GLOBALS['TL_DCA'][$this->dbTargetTable];
 
 		foreach ($this->arrMapping as $key => $col) {
-			$value = $this->setValueByType($objSourceItem->{$key}, $dca['fields'][$key]);
+			$value                = $this->setValueByType($objSourceItem->{$key}, $dca['fields'][$key]);
 			$arrCreateAfterSaving = array();
 			$this->setObjectValueFromMapping($objItem, $value, $key, $arrCreateAfterSaving);
 
@@ -153,15 +164,22 @@ class Importer extends \Backend
 			}
 
 			// do not save in dry run
-			if($this->dryRun) continue;
+			if ($this->dryRun) {
+				
+				ob_start();
+				print_r($objItem);
+				print "\n";
+				file_put_contents(TL_ROOT . '/debug.txt', ob_get_contents(), FILE_APPEND);
+				ob_end_clean();
+				continue;
+			}
 
 			$objItem->save();
 		}
 
 
 		// do after item has been created, no in dry mode
-		if(!$this->dryRun)
-		{
+		if (!$this->dryRun) {
 			$this->runAfterSaving($objItem, $objSourceItem);
 		}
 
@@ -211,6 +229,7 @@ class Importer extends \Backend
 		$objFile->copyTo($objTargetDir->path . '/' . $objFile->name);
 
 		$objModel = $objFile->getModel();
+
 		return $objModel->uuid;
 	}
 
@@ -220,10 +239,11 @@ class Importer extends \Backend
 		if (substr($key, 0, 1) == '!') {
 			$key = preg_replace('/!/', '', $key, 1);
 
-			if (is_array($objItem))
+			if (is_array($objItem)) {
 				$objItem[$key] = !$value;
-			else
+			} else {
 				$objItem->{$key} = !$value;
+			}
 
 			return $objItem;
 		}
@@ -232,18 +252,21 @@ class Importer extends \Backend
 		$multipleKeys = trimsplit(',', $key);
 		if (!empty($multipleKeys)) {
 			foreach ($multipleKeys as $subKey) {
-				if (is_array($objItem))
+				if (is_array($objItem)) {
 					$objItem[$subKey] = $value;
-				else
+				} else {
 					$objItem->{$subKey} = $value;
+				}
 			}
+
 			return $objItem;
 		}
 
-		if (is_array($objItem))
+		if (is_array($objItem)) {
 			$objItem[$key] = $value;
-		else
+		} else {
 			$objItem->$key = $value;
+		}
 	}
 
 	protected function collectItems()
@@ -256,13 +279,13 @@ class Importer extends \Backend
 			$strQuery .= " WHERE " . $this->whereClause;
 		}
 
-		if ($this->useTimeInterval)
-		{
+		if ($this->useTimeInterval) {
 			$intStart = intval($this->start ? $this->start : 0);
-			$intEnd = intval($this->end ? $this->end : 2145913200);
+			$intEnd   = intval($this->end ? $this->end : 2145913200);
 
 			$strDateCol = $this->arrMapping['date'];
-			$strQuery .= ($this->whereClause ? " AND " : " WHERE ") . "(($strDateCol>=$intStart AND $strDateCol<=$intEnd) OR ($strDateCol>=$intStart AND $strDateCol<=$intEnd) OR ($strDateCol<=$intStart AND $strDateCol>=$intEnd))";
+			$strQuery .= ($this->whereClause ? " AND " : " WHERE ")
+						 . "(($strDateCol>=$intStart AND $strDateCol<=$intEnd) OR ($strDateCol>=$intStart AND $strDateCol<=$intEnd) OR ($strDateCol<=$intStart AND $strDateCol>=$intEnd))";
 		}
 
 		$objResult = $this->Database->prepare($strQuery)->execute();
@@ -335,13 +358,14 @@ class Importer extends \Backend
 		$this->dbFieldMapping = deserialize($this->dbFieldMapping, true);
 
 		foreach ($this->dbFieldMapping as $arrConfig) {
-			if ($arrConfig['type'] == 'source') {
+			if ($arrConfig['type'] == 'source' || $arrConfig['type'] == 'foreignKey') {
 				$arrSrcDbConfig               = $this->getSourceDbConfig($arrConfig['source']);
 				$arrTargetDbConfig            = $this->getTargetDbConfig($arrConfig['target']);
-				$arrMap[$arrConfig['target']] = $this->getFieldMappingDbValue($arrSrcDbConfig, $arrTargetDbConfig);
+				$arrMap[$arrConfig['target']] = $this->getFieldMappingDbValue($arrSrcDbConfig, $arrTargetDbConfig, $arrConfig['type'] == 'foreignKey' ? $arrConfig['value'] : '');
 			} else {
 				if ($arrConfig['type'] == 'value' && !empty($arrConfig['value'])) {
-					$arrMap[$arrConfig['target']] = (is_string($arrConfig['value']) ? '"' . addslashes($arrConfig['value']) . '"' : $arrConfig['value']);
+					$arrMap[$arrConfig['target']] =
+						(is_string($arrConfig['value']) ? '"' . addslashes($arrConfig['value']) . '"' : $arrConfig['value']);
 				}
 			}
 		}
@@ -350,7 +374,11 @@ class Importer extends \Backend
 	}
 
 
-	protected function runAfterSaving(&$objItem, $objTypoItem) {}
+	protected function runAfterSaving(&$objItem, $objTypoItem)
+	{
+	}
 
-	protected function createImportMessage($objItem) {}
+	protected function createImportMessage($objItem)
+	{
+	}
 }

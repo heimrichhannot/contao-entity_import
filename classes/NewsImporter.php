@@ -22,27 +22,6 @@ class NewsImporter extends Importer
 		return preg_replace($pattern, $replacement, $html);
 	}
 
-	protected function getFieldsMapping()
-	{
-		$arrMap = array();
-
-		$this->dbFieldMapping = deserialize($this->dbFieldMapping, true);
-
-		foreach ($this->dbFieldMapping as $arrConfig) {
-			if ($arrConfig['type'] == 'source') {
-				$arrSrcDbConfig               = $this->getSourceDbConfig($arrConfig['source']);
-				$arrTargetDbConfig            = $this->getTargetDbConfig($arrConfig['target']);
-				$arrMap[$arrConfig['target']] = $this->getFieldMappingDbValue($arrSrcDbConfig, $arrTargetDbConfig);
-			} else {
-				if ($arrConfig['type'] == 'value' && !empty($arrConfig['value'])) {
-					$arrMap[$arrConfig['target']] = (is_string($arrConfig['value']) ? '"' . $arrConfig['value'] . '"' : $arrConfig['value']);
-				}
-			}
-		}
-
-		return $arrMap;
-	}
-
 	protected function runAfterSaving(&$objItem, $objTypoItem)
 	{
 		$objItem->alias    = $this->generateAlias($objItem->alias ? $objItem->alias : $objItem->headline, $objItem);
