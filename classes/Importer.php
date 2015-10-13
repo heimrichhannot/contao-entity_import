@@ -143,6 +143,10 @@ class Importer extends \Backend
 			$this->createImportMessage($objItem);
 		}
 
+		// reset the iterator
+		$this->objItems->reset();
+		$this->runAfterComplete($this->objItems);
+
 		return true;
 	}
 
@@ -165,12 +169,6 @@ class Importer extends \Backend
 
 			// do not save in dry run
 			if ($this->dryRun) {
-				
-				ob_start();
-				print_r($objItem);
-				print "\n";
-				file_put_contents(TL_ROOT . '/debug.txt', ob_get_contents(), FILE_APPEND);
-				ob_end_clean();
 				continue;
 			}
 
@@ -375,6 +373,10 @@ class Importer extends \Backend
 
 
 	protected function runAfterSaving(&$objItem, $objTypoItem)
+	{
+	}
+
+	protected function runAfterComplete($objItems)
 	{
 	}
 
