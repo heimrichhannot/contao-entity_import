@@ -264,7 +264,7 @@ class Importer extends \Backend
 
 		$strTargetFile = $objTargetDir->path . '/' . basename($strRelFile);
 
-		$objFile = new \File($strRelFile);
+		$objFile = new \File($strRelFile, false);
 
 		$blnCopy = true;
 
@@ -275,20 +275,23 @@ class Importer extends \Backend
 			$objTargetFile = new \File($strTargetFile, false);
 
 			$blnCopy = ($objTargetFile->size != $objFile->size || $objTargetFile->mtime < $objFile->mtime);
+
+			if(!$blnCopy)
+			{
+				$objFile = $objTargetFile;
+			}
 		}
 
 		if($blnCopy)
 		{
-			$objFile->copyTo($objTargetDir->path . '/' . $objFile->name);
+			$objFile->copyTo($strTargetFile);
 		}
-
 
 		$objModel = $objFile->getModel();
 
 		if($objModel !== null)
 		{
 			\Message::addConfirmation('<strong>Copied file </strong><br/>from:' . $strRelFile . ' <br /> to: ' . $objTargetDir->path . '/' . $objFile->name);
-
 		}
 
 		if (!is_array($this->arrFileMapping) || empty($this->arrFileMapping))
