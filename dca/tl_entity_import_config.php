@@ -91,7 +91,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = array
 	'palettes'    => array
 	(
 		'__selector__' => array('type', 'useTimeInterval', 'purgeBeforeImport'),
-		'default'      => '{title_legend},title,description;{config_legend},dbSourceTable,dbTargetTable,importerClass,purgeBeforeImport,dbFieldMapping,useTimeInterval,whereClause,sourceDir,targetDir;',
+		'default'      => '{title_legend},title,description;{config_legend},dbSourceTable,dbTargetTable,importerClass,purgeBeforeImport,dbFieldMapping,useTimeInterval,whereClause,sourceDir,targetDir,dbFieldFileMapping;',
 	),
 	// Subpalettes
 	'subpalettes' => array
@@ -292,6 +292,61 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = array
 			'eval'      => array('files' => false, 'fieldType' => 'radio', 'tl_class' => 'w50'),
 			'sql'       => "binary(16) NULL",
 		),
+		'dbFieldFileMapping'  => array
+		(
+				'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldFileMapping'],
+				'inputType' => 'multiColumnWizard',
+				'exclude'   => true,
+				'eval'      => array
+				(
+						'tl_class'     => 'clr',
+						'columnFields' => array
+						(
+								'type'   => array
+								(
+										'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['type'],
+										'inputType' => 'select',
+										'options'   => array('source', 'foreignKey', 'value'),
+										'reference' => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMappingOptions'],
+										'eval'      => array
+										(
+												'style' => 'width:150px',
+										),
+								),
+								'source' => array
+								(
+										'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['source'],
+										'inputType'        => 'select',
+										'options_callback' => array('tl_entity_import_config', 'getSourceFields'),
+										'eval'             => array
+										(
+												'style'              => 'width:150px',
+												'includeBlankOption' => true,
+										),
+								),
+								'value'  => array
+								(
+										'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['value'],
+										'inputType' => 'text',
+										'eval'      => array
+										(
+												'style' => 'width:150px',
+										),
+								),
+								'target' => array
+								(
+										'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['target'],
+										'inputType'        => 'select',
+										'options_callback' => array('tl_entity_import_config', 'getTargetFileFields'),
+										'eval'             => array
+										(
+												'style' => 'width:150px',
+										),
+								),
+						),
+				),
+				'sql'       => "blob NULL",
+		),
 		'catTypo'         => array
 		(
 			'label'            => &$GLOBALS['TL_LANG']['tl_member']['catTypo'],
@@ -390,6 +445,28 @@ class tl_entity_import_config extends \Backend
 		}
 
 		$arrOptions['tl_content'] = &$GLOBALS['TL_LANG']['tl_entity_import_config']['createNewContentElement'];
+
+		foreach ($arrFields as $arrField) {
+			if (in_array($arrField['type'], array('index'))) {
+				continue;
+			}
+
+			$arrOptions[$arrField['name']] = $arrField['name'] . ' [' . $arrField['origtype'] . ']';
+		}
+
+
+		return $arrOptions;
+	}
+
+	public function getTargetFileFields($dc)
+	{
+		$arrOptions = array();
+
+		$arrFields = \Database::getInstance()->listFields('tl_files');
+
+		if (!is_array($arrFields) || empty($arrFields)) {
+			return $arrOptions;
+		}
 
 		foreach ($arrFields as $arrField) {
 			if (in_array($arrField['type'], array('index'))) {

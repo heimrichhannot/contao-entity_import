@@ -14,6 +14,8 @@ class Importer extends \Backend
 
 	protected $arrMapping = array();
 
+	protected $arrFileMapping = array();
+
 	protected $arrNamedMapping = array();
 
 	protected $Database;
@@ -21,6 +23,8 @@ class Importer extends \Backend
 	protected $arrDbSourceFields = array();
 
 	protected $arrDbTargetFields = array();
+
+	protected $arrDbFileFields = array();
 
 	protected $dryRun = false;
 
@@ -43,9 +47,12 @@ class Importer extends \Backend
 		$this->Database          = Database::getInstance($this->objParentModel->row());
 		$this->arrDbSourceFields = $this->Database->listFields($this->dbSourceTable);
 		$this->arrDbTargetFields = \Database::getInstance()->listFields($this->dbTargetTable);
+		$this->arrDbFileFields   = \Database::getInstance()->listFields('tl_files');
 
-		$this->arrMapping = $this->getFieldsMapping();
-
+		$this->arrMapping     = $this->getFieldsMapping(deserialize($this->dbFieldMapping, true), $this->arrDbSourceFields, $this->arrDbTargetFields);
+		$this->arrFileMapping =
+			$this->getFieldsMapping(deserialize($this->dbFieldFileMapping, true), $this->arrDbSourceFields, $this->arrDbFileFields);
+		
 		$arrNamedMapping = $this->arrMapping;
 
 		// name fields
@@ -67,14 +74,13 @@ class Importer extends \Backend
 		\Database::getInstance()->execute($strQuery);
 	}
 
-	protected function getFieldMappingDbValue($arrSourceConfig, $arrTargetConfig, $strForeignKey='')
+	protected function getFieldMappingDbValue($arrSourceConfig, $arrTargetConfig, $strForeignKey = '')
 	{
 		$t = $this->dbSourceTable;
 
 		$strValue = $arrSourceConfig['name'];
 
-		switch ($arrSourceConfig['type'])
-		{
+		switch ($arrSourceConfig['type']) {
 			case 'timestamp':
 				if ($arrTargetConfig['type'] == 'int') {
 					$strValue = "UNIX_TIMESTAMP($t.$strValue)";
@@ -84,31 +90,25 @@ class Importer extends \Backend
 				$strValue = $this->dbSourceTable . '.' . $strValue;
 		}
 		
-		if($strForeignKey != '' && preg_match('#(?<PK>.*)=(?<TABLE>.*)[.](?<COLUMN>.*)#', \StringUtil::decodeEntities($strForeignKey), $arrForeignKey))
-		{
-			if(isset($arrForeignKey['PK']) && ($arrForeignKey['TABLE']) && ($arrForeignKey['COLUMN']))
-			{
-				$strValue = sprintf("(SELECT %s FROM %s WHERE %s=%s)", $arrForeignKey['COLUMN'], $arrForeignKey['TABLE'], $arrForeignKey['PK'], $strValue);
+		if ($strForeignKey != ''
+			&& preg_match(
+				'#(?<PK>.*)=(?<TABLE>.*)[.](?<COLUMN>.*)#',
+				\StringUtil::decodeEntities($strForeignKey),
+				$arrForeignKey
+			)
+		) {
+			if (isset($arrForeignKey['PK']) && ($arrForeignKey['TABLE']) && ($arrForeignKey['COLUMN'])) {
+				$strValue =
+					sprintf("(SELECT %s FROM %s WHERE %s=%s)", $arrForeignKey['COLUMN'], $arrForeignKey['TABLE'], $arrForeignKey['PK'], $strValue);
 			}
 		}
 		
 		return $strValue;
 	}
 
-	protected function getTargetDbConfig($strName)
+	protected function getDbConfig($strName, array $arrFields)
 	{
-		foreach ($this->arrDbTargetFields as $arrField) {
-			if ($strName == $arrField['name']) {
-				return $arrField;
-			}
-		}
-
-		return false;
-	}
-
-	protected function getSourceDbConfig($strName)
-	{
-		foreach ($this->arrDbSourceFields as $arrField) {
+		foreach ($arrFields as $arrField) {
 			if ($strName == $arrField['name']) {
 				return $arrField;
 			}
@@ -157,11 +157,22 @@ class Importer extends \Backend
 		\Controller::loadDataContainer($this->dbTargetTable);
 
 		$dca = $GLOBALS['TL_DCA'][$this->dbTargetTable];
+		
+		// update existing items
+		if (in_array($objItem->getPk(), array_keys($this->arrMapping)))
+		{
+			$objUpdateItem = $strClass::findByPk($objSourceItem->{$objItem->getPk()});
 
-		foreach ($this->arrMapping as $key => $col) {
-			$value                = $this->setValueByType($objSourceItem->{$key}, $dca['fields'][$key]);
-			$arrCreateAfterSaving = array();
-			$this->setObjectValueFromMapping($objItem, $value, $key, $arrCreateAfterSaving);
+			if($objUpdateItem !== null)
+			{
+				$objItem = $objUpdateItem;
+			}
+		}
+		
+		foreach ($this->arrMapping as $key => $col)
+		{
+			$value                = $this->setValueByType($objSourceItem->{$key}, $dca['fields'][$key], $objItem, $objSourceItem);
+			$this->setObjectValueFromMapping($objItem, $value, $key);
 
 			if ($value === null) {
 				continue;
@@ -177,19 +188,31 @@ class Importer extends \Backend
 
 
 		// do after item has been created, no in dry mode
-		if (!$this->dryRun) {
+		if (!$this->dryRun)
+		{
 			$this->runAfterSaving($objItem, $objSourceItem);
 		}
 
 		return $objItem;
 	}
 
-	protected function setValueByType($varValue, $arrData)
+	protected function setValueByType($varValue, $arrData, $objItem, $objSourceItem)
 	{
 		switch ($arrData['inputType']) {
 			case 'fileTree':
 				if ($arrData['eval']['filesOnly']) {
-					$varValue = $this->createSingleFile($varValue);
+					if(!$this->dryRun)
+					{
+						$varValue = deserialize($varValue);
+
+						if(is_array($varValue))
+						{
+							$varValue = $this->createMultipleFiles($varValue, $arrData, $objItem, $objSourceItem);
+							break;
+						}
+
+						$varValue = $this->createSingleFile($varValue, $arrData, $objItem, $objSourceItem);
+					}
 				}
 
 				// TODO: multiple files
@@ -199,7 +222,23 @@ class Importer extends \Backend
 		return $varValue;
 	}
 
-	protected function createSingleFile($varValue)
+	protected function createMultipleFiles(array $arrFiles, $arrData, $objItem, $objSourceItem)
+	{
+		$arrReturn = array();
+
+		foreach($arrFiles as $varValue)
+		{
+			$uuid = $this->createSingleFile($varValue, $arrData, $objItem, $objSourceItem);
+
+			if(!\Validator::isUuid($uuid)) continue;
+
+			$arrReturn[] = $uuid;
+		}
+
+		return $arrReturn;
+	}
+
+	protected function createSingleFile($varValue, $arrData, $objItem, $objSourceItem)
 	{
 		if ($this->sourceDir === null || $this->targetDir === null || $varValue == '') {
 			return false;
@@ -218,15 +257,66 @@ class Importer extends \Backend
 		}
 
 		$strRelFile = $objSourceDir->path . '/' . ltrim($varValue, '/');
-
+		
 		if (is_dir(TL_ROOT . '/' . $strRelFile) || !file_exists(TL_ROOT . '/' . $strRelFile)) {
 			return null;
 		}
 
+		$strTargetFile = $objTargetDir->path . '/' . basename($strRelFile);
+
 		$objFile = new \File($strRelFile);
-		$objFile->copyTo($objTargetDir->path . '/' . $objFile->name);
+
+		$blnCopy = true;
+
+		if(file_exists(TL_ROOT . '/' . $strTargetFile))
+		{
+			$blnCopy = false;
+
+			$objTargetFile = new \File($strTargetFile, false);
+
+			$blnCopy = ($objTargetFile->size != $objFile->size || $objTargetFile->mtime < $objFile->mtime);
+		}
+
+		if($blnCopy)
+		{
+			$objFile->copyTo($objTargetDir->path . '/' . $objFile->name);
+		}
+
 
 		$objModel = $objFile->getModel();
+
+		if($objModel !== null)
+		{
+			\Message::addConfirmation('<strong>Copied file </strong><br/>from:' . $strRelFile . ' <br /> to: ' . $objTargetDir->path . '/' . $objFile->name);
+
+		}
+
+		if (!is_array($this->arrFileMapping) || empty($this->arrFileMapping))
+		{
+			return $objModel->uuid;
+		}
+
+		// set additional file fields from source
+		foreach ($this->arrFileMapping as $key => $col)
+		{
+			$col = str_replace($this->dbSourceTable . '.', '', $col);
+
+			$value = $objSourceItem->{$col};
+
+			$this->setObjectValueFromMapping($objModel, $value, $key);
+
+			if ($value === null) {
+				continue;
+			}
+
+			// do not save in dry run
+			if ($this->dryRun) {
+				continue;
+			}
+
+			$objModel->save();
+		}
+
 
 		return $objModel->uuid;
 	}
@@ -349,17 +439,16 @@ class Importer extends \Backend
 	 * Key = Field Name
 	 * Value = Contao Field Name
 	 */
-	protected function getFieldsMapping()
+	protected function getFieldsMapping(array $arrSourceMap, array $arrSourceFields, array $arrTargetFields)
 	{
 		$arrMap = array();
 
-		$this->dbFieldMapping = deserialize($this->dbFieldMapping, true);
-
-		foreach ($this->dbFieldMapping as $arrConfig) {
+		foreach ($arrSourceMap as $arrConfig) {
 			if ($arrConfig['type'] == 'source' || $arrConfig['type'] == 'foreignKey') {
-				$arrSrcDbConfig               = $this->getSourceDbConfig($arrConfig['source']);
-				$arrTargetDbConfig            = $this->getTargetDbConfig($arrConfig['target']);
-				$arrMap[$arrConfig['target']] = $this->getFieldMappingDbValue($arrSrcDbConfig, $arrTargetDbConfig, $arrConfig['type'] == 'foreignKey' ? $arrConfig['value'] : '');
+				$arrSrcDbConfig               = $this->getDbConfig($arrConfig['source'], $arrSourceFields);
+				$arrTargetDbConfig            = $this->getDbConfig($arrConfig['target'], $arrTargetFields);
+				$arrMap[$arrConfig['target']] =
+					$this->getFieldMappingDbValue($arrSrcDbConfig, $arrTargetDbConfig, $arrConfig['type'] == 'foreignKey' ? $arrConfig['value'] : '');
 			} else {
 				if ($arrConfig['type'] == 'value' && !empty($arrConfig['value'])) {
 					$arrMap[$arrConfig['target']] =
@@ -367,7 +456,13 @@ class Importer extends \Backend
 				}
 			}
 		}
-
+		
+		ob_start();
+		print_r($arrMap);
+		print "\n";
+		file_put_contents(TL_ROOT . '/debug.txt', ob_get_contents(), FILE_APPEND);
+		ob_end_clean();
+		
 		return $arrMap;
 	}
 
