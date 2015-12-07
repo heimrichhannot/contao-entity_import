@@ -156,6 +156,9 @@ class NewsImporter extends Importer
 		$arrTarget = array();
 
 		foreach ($arrSource as $strFile) {
+
+			if(\Validator::isUuid($strFile)) continue;
+
 			$strRelFile = $objSourceDir->path . '/' . ltrim($strFile, '/');
 
 			if (is_dir(TL_ROOT . '/' . $strRelFile) || !file_exists(TL_ROOT . '/' . $strRelFile)) {

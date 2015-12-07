@@ -296,7 +296,7 @@ class Importer extends \Backend
 
 		if (!is_array($this->arrFileMapping) || empty($this->arrFileMapping))
 		{
-			return $objModel->uuid;
+			return $objModel !== null ? $objModel->uuid : null;
 		}
 
 		// set additional file fields from source
@@ -321,7 +321,7 @@ class Importer extends \Backend
 		}
 
 
-		return $objModel->uuid;
+		return $objModel !== null ? $objModel->uuid : null;
 	}
 
 	protected function setObjectValueFromMapping(&$objItem, $value, $key)
