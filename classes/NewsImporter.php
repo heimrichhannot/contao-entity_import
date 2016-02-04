@@ -69,6 +69,8 @@ class NewsImporter extends Importer
 				'drop-proprietary-attributes' => true,
 				'quote-ampersand'             => true,
 				'clean'                       => false,
+				'wrap-attributes'			  => false,
+				'wrap'						  => 500,
 			);
 
 			$bodyText = '<!DOCTYPE html><head><title></title></head><body>' . $objItem->tl_content . '</body></html>';
@@ -82,15 +84,24 @@ class NewsImporter extends Importer
 			$body = $tidy->body();
 
 			$objContent       = new \ContentModel();
+			$objContent->text = urldecode($objContent->text); // decode, otherwise link and email regex wont work
 			$objContent->text = trim(str_replace(array('<body>', '</body>'), '', $body));
 			$objContent->text = preg_replace("/<img[^>]+\>/i", "", $objContent->text); // strip images
+			// remove inline styles
+			$objContent->text = preg_replace('#(<[a-z ]*)(style=("|\')(.*?)("|\'))([a-z ]*>)#', '\\1\\6', $objContent->text);
+			// remove white space from empty tags
+			$objContent->text = preg_replace('#(<[a-z]*)(\s+)>#', '$1>', $objContent->text);
 			// create links from text
 			$objContent->text =
 				preg_replace('!(\s|^)((https?://|www\.)+[a-z0-9_./?=&-]+)!i', ' <a href="http://$2" target="_blank">$2</a>', $objContent->text);
 			// replace <b> by <strong>
 			$objContent->text = preg_replace('!<b(.*?)>(.*?)</b>!i', '<strong>$2</strong>', $objContent->text);
-			// replace emails with inserttags
-			$objContent->text = preg_replace('/([A-Z0-9._%+-]+)@([A-Z0-9.-]+)\.([A-Z]{2,4})(\((.+?)\))?/i', "{{email::$1@$2.$3}}", $objContent->text);
+			// replace plain email text with inserttags
+			$objContent->text = preg_replace('/([A-Z0-9._%+-]+)@([A-Z0-9.-]+)\.([A-Z]{2,4})(\((.+?)\))?(?![^<]*>)(?![^>]*<)/i', "{{email::$1@$2.$3}}", $objContent->text);
+
+			// replace email links with inserttags
+			$objContent->text = preg_replace('/<a.*href=[\'|"]mailto:([A-Z0-9._%+-]+)@([A-Z0-9.-]+)\.([A-Z]{2,4})(\((.+?)\))?[\'|"].*>(.*)<\/a>/i', "{{email::$1@$2.$3}}", $objContent->text);
+
 			// strip not allowed tags
 			$objContent->text = strip_tags($objContent->text, \Config::get('allowedTags'));
 

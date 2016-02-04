@@ -191,6 +191,17 @@ class Importer extends \Backend
 		if (!$this->dryRun)
 		{
 			$this->runAfterSaving($objItem, $objSourceItem);
+
+
+			// HOOK: run after saving callback
+			if (isset($GLOBALS['TL_HOOKS']['entityImportRunAfterSaving']) && is_array($GLOBALS['TL_HOOKS']['entityImportRunAfterSaving']))
+			{
+				foreach ($GLOBALS['TL_HOOKS']['entityImportRunAfterSaving'] as $callback)
+				{
+					$this->import($callback[0]);
+					$objItem = $this->$callback[0]->$callback[1]($objItem, $objSourceItem, $this);
+				}
+			}
 		}
 
 		return $objItem;
@@ -459,12 +470,6 @@ class Importer extends \Backend
 				}
 			}
 		}
-		
-		ob_start();
-		print_r($arrMap);
-		print "\n";
-		file_put_contents(TL_ROOT . '/debug.txt', ob_get_contents(), FILE_APPEND);
-		ob_end_clean();
 		
 		return $arrMap;
 	}
