@@ -40,7 +40,7 @@ class DatabaseImporter extends Importer
 		$arrItem = array();
 
 		foreach ($this->arrMapping as $key => $col) {
-			$value = $this->setValueByType($objSourceItem->{$key}, $dca['fields'][$key]);
+			$value = $this->setValueByType($objSourceItem->{$key}, $dca['fields'][$key], $arrItem, $objSourceItem);
 			$this->setObjectValueFromMapping($arrItem, $value, $key);
 
 			if ($value === null) {
@@ -51,9 +51,12 @@ class DatabaseImporter extends Importer
 
 		if (!$this->dryRun)
 		{
-			$strQuery = "INSERT INTO $t (" . implode(',', array_keys($arrItem)) . ") VALUES(" . implode(',', array_map(function($val) { return "'" . $val . "'"; }, array_values($arrItem))) . ")";
+			if (!$this->skipInsertion)
+			{
+				$strQuery = "INSERT INTO $t (" . implode(',', array_keys($arrItem)) . ") VALUES(" . implode(',', array_map(function($val) { return "'" . $val . "'"; }, array_values($arrItem))) . ")";
 
-			$arrItem['id'] = $objDatabase->execute($strQuery)->insertId;
+				$arrItem['id'] = $objDatabase->execute($strQuery)->insertId;
+			}
 
 			// do after item has been created,
 			$this->runAfterSaving($arrItem, $objSourceItem);

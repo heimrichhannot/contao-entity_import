@@ -207,7 +207,7 @@ class Importer extends \Backend
 		return $objItem;
 	}
 
-	protected function setValueByType($varValue, $arrData, $objItem, $objSourceItem)
+	protected function setValueByType($varValue, $arrData, $varItem, $objSourceItem)
 	{
 		switch ($arrData['inputType']) {
 			case 'fileTree':
@@ -218,11 +218,11 @@ class Importer extends \Backend
 
 						if(is_array($varValue))
 						{
-							$varValue = $this->createMultipleFiles($varValue, $arrData, $objItem, $objSourceItem);
+							$varValue = $this->createMultipleFiles($varValue, $arrData, $varItem, $objSourceItem);
 							break;
 						}
 
-						$varValue = $this->createSingleFile($varValue, $arrData, $objItem, $objSourceItem);
+						$varValue = $this->createSingleFile($varValue, $arrData, $varItem, $objSourceItem);
 					}
 				}
 
@@ -233,13 +233,13 @@ class Importer extends \Backend
 		return $varValue;
 	}
 
-	protected function createMultipleFiles(array $arrFiles, $arrData, $objItem, $objSourceItem)
+	protected function createMultipleFiles(array $arrFiles, $arrData, $varItem, $objSourceItem)
 	{
 		$arrReturn = array();
 
 		foreach($arrFiles as $varValue)
 		{
-			$uuid = $this->createSingleFile($varValue, $arrData, $objItem, $objSourceItem);
+			$uuid = $this->createSingleFile($varValue, $arrData, $varItem, $objSourceItem);
 
 			if(!\Validator::isUuid($uuid)) continue;
 
@@ -249,7 +249,7 @@ class Importer extends \Backend
 		return $arrReturn;
 	}
 
-	protected function createSingleFile($varValue, $arrData, $objItem, $objSourceItem)
+	protected function createSingleFile($varValue, $arrData, $varItem, $objSourceItem)
 	{
 		if ($this->sourceDir === null || $this->targetDir === null || $varValue == '') {
 			return false;
