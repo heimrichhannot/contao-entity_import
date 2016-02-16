@@ -60,6 +60,24 @@ class DatabaseImporter extends Importer
 
 			// do after item has been created,
 			$this->runAfterSaving($arrItem, $objSourceItem);
+
+			// save updates
+			if (!$this->skipUpdateAfterSave)
+			{
+				$arrTargetItemPrepared = array();
+				foreach ($arrItem as $strKey => $strVal) {
+					if ($strKey == 'id')
+						continue;
+
+					$strVal = str_replace("'", "''", $strVal);
+
+					$arrTargetItemPrepared[] = "$this->dbTargetTable.$strKey='$strVal'";
+				}
+
+				// update all values to the db
+				$strQuery = "UPDATE $this->dbTargetTable SET " . implode(',', $arrTargetItemPrepared) . " WHERE id=" . $arrItem['id'];
+				\Database::getInstance()->execute($strQuery);
+			}
 		}
 
 		return $arrItem;
