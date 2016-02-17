@@ -251,29 +251,48 @@ class Importer extends \Backend
 
 	protected function createSingleFile($varValue, $arrData, $varItem, $objSourceItem)
 	{
-		if ($this->sourceDir === null || $this->targetDir === null || $varValue == '') {
+		if ($varValue == '') {
 			return false;
 		}
 
-		$objSourceDir = \FilesModel::findByUuid($this->sourceDir);
-
-		if ($objSourceDir === null) {
-			return false;
+		// contao 3.x files model support
+		if(\Validator::isUuid($varValue))
+		{
+			$objRelFile = \FilesModel::findByUuid($varValue);
+			$varValue = $objRelFile->path;
 		}
 
-		$objTargetDir = \FilesModel::findByUuid($this->targetDir);
+		$strRelFile = $varValue;
 
-		if ($objTargetDir === null) {
-			return false;
+		// source dir is given, take file from there
+		if($this->sourceDir !== null)
+		{
+			$objSourceDir = \FilesModel::findByUuid($this->sourceDir);
+
+			if ($objSourceDir !== null)
+			{
+				$strRelFile = $objSourceDir->path . '/' . ltrim($varValue, '/');
+			}
 		}
 
-		$strRelFile = $objSourceDir->path . '/' . ltrim($varValue, '/');
-		
-		if (is_dir(TL_ROOT . '/' . $strRelFile) || !file_exists(TL_ROOT . '/' . $strRelFile)) {
+		// source file = target file
+		$strTargetFile = $strRelFile;
+
+		// target dir is set, move file to there
+		if($this->targetDir !== null)
+		{
+			$objTargetDir = \FilesModel::findByUuid($this->targetDir);
+
+			if ($objTargetDir !== null)
+			{
+				$strTargetFile = $objTargetDir->path . '/' . basename($strRelFile);
+			}
+		}
+
+		if (is_dir(TL_ROOT . '/' . $strRelFile) || !file_exists(TL_ROOT . '/' . $strRelFile))
+		{
 			return null;
 		}
-
-		$strTargetFile = $objTargetDir->path . '/' . basename($strRelFile);
 
 		$objFile = new \File($strRelFile, false);
 
@@ -283,7 +302,7 @@ class Importer extends \Backend
 		{
 			$blnCopy = false;
 
-			$objTargetFile = new \File($strTargetFile, false);
+			$objTargetFile = new \File($strTargetFile, true);
 
 			$blnCopy = ($objTargetFile->size != $objFile->size || $objTargetFile->mtime < $objFile->mtime);
 
@@ -302,7 +321,14 @@ class Importer extends \Backend
 
 		if($objModel !== null)
 		{
-			\Message::addConfirmation('<strong>Copied file </strong><br/>from:' . $strRelFile . ' <br /> to: ' . $objTargetDir->path . '/' . $objFile->name);
+			if($blnCopy)
+			{
+				\Message::addConfirmation('Copied file from:<i>' . $strRelFile . '</i><br /> to: <i>' . $strTargetFile . '</i>');
+			}
+			else
+			{
+				\Message::addConfirmation('File <i>' . $strTargetFile . '</i> already exists, no copy needed.');
+			}
 		}
 
 		if (!is_array($this->arrFileMapping) || empty($this->arrFileMapping))
