@@ -416,7 +416,7 @@ class Importer extends \Backend
 						 . "(($strDateCol>=$intStart AND $strDateCol<=$intEnd) OR ($strDateCol>=$intStart AND $strDateCol<=$intEnd) OR ($strDateCol<=$intStart AND $strDateCol>=$intEnd))";
 		}
 
-		$objResult = $this->Database->prepare($strQuery)->execute();
+		$objResult = $this->Database->prepare(html_entity_decode($strQuery))->execute();
 
 		$this->objItems = $objResult;
 	}
