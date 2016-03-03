@@ -412,11 +412,11 @@ class Importer extends \Backend
 			$intEnd   = intval($this->end ? $this->end : 2145913200);
 
 			$strDateCol = $this->arrMapping['date'];
-			$strQuery .= ($this->whereClause ? " AND " : " WHERE ")
-						 . "(($strDateCol>=$intStart AND $strDateCol<=$intEnd) OR ($strDateCol>=$intStart AND $strDateCol<=$intEnd) OR ($strDateCol<=$intStart AND $strDateCol>=$intEnd))";
+			$strQuery .= html_entity_decode(($this->whereClause ? " AND " : " WHERE ")
+						 . "(($strDateCol>=$intStart AND $strDateCol<=$intEnd) OR ($strDateCol>=$intStart AND $strDateCol<=$intEnd) OR ($strDateCol<=$intStart AND $strDateCol>=$intEnd))");
 		}
 
-		$objResult = $this->Database->prepare(html_entity_decode($strQuery))->execute();
+		$objResult = $this->Database->prepare($strQuery)->execute();
 
 		$this->objItems = $objResult;
 	}
