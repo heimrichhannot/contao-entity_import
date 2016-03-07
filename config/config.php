@@ -1,6 +1,12 @@
 <?php
 
 /**
+ * Config
+ */
+// TODO Excel
+$GLOBALS['TL_CONFIG']['validEntityImportTypes'] = 'csv,txt';
+
+/**
  * Back end modules
  */
 $GLOBALS['BE_MOD']['devtools']['entity_import'] = array
@@ -22,3 +28,9 @@ $GLOBALS['TL_MODELS']['tl_entity_import_config'] = 'HeimrichHannot\EntityImport\
 $GLOBALS['TL_HOOKS']['initEntityImportPalettes'] = array(
 	'initNewsPalette' => array('tl_entity_import_config', 'initNewsPalette')
 );
+
+/**
+ * Constants
+ */
+define('ENTITY_IMPORT_CONFIG_TYPE_DATABASE', 'db');
+define('ENTITY_IMPORT_CONFIG_TYPE_FILE', 'file');

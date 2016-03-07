@@ -4,6 +4,9 @@
  * Fields
  */
 $GLOBALS['TL_LANG']['tl_entity_import']['title']	= array('Titel', 'Geben Sie hier den Titel des Imports ein.');
+$GLOBALS['TL_LANG']['tl_entity_import']['type']	= array('Typ', 'Wählen Sie hier den Typ des Imports aus.');
+$GLOBALS['TL_LANG']['tl_entity_import']['type'][ENTITY_IMPORT_CONFIG_TYPE_DATABASE] = 'Datenbank';
+$GLOBALS['TL_LANG']['tl_entity_import']['type'][ENTITY_IMPORT_CONFIG_TYPE_FILE] = 'Datei';
 $GLOBALS['TL_LANG']['tl_entity_import']['dbDriver']	= array('Treiber', 'Wählen Sie hier den Datenbanktreiber aus.');
 $GLOBALS['TL_LANG']['tl_entity_import']['dbHost']	= array('Host', 'Geben Sie hier die Adresse des Datenbankhosts ein.');
 $GLOBALS['TL_LANG']['tl_entity_import']['dbUser']	= array('Nutzer', 'Geben Sie hier einen berechtigten Datenbanknutzer ein.');

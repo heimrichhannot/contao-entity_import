@@ -94,7 +94,9 @@ $GLOBALS['TL_DCA']['tl_entity_import'] = array
 	'palettes'    => array
 	(
 		'__selector__' => array('type'),
-		'default'      => '{title_legend},title;{db_legend},dbDriver,dbHost,dbUser,dbPass,dbDatabase,dbPconnect,dbCharset,dbPort,dbSocket',
+		'default'      => '{title_legend},title,type;',
+		'db'           => '{title_legend},title,type;{db_legend},dbDriver,dbHost,dbUser,dbPass,dbDatabase,dbPconnect,dbCharset,dbPort,dbSocket',
+		'file'         => '{title_legend},title,type;',
 	),
 
 	// Subpalettes
@@ -119,6 +121,20 @@ $GLOBALS['TL_DCA']['tl_entity_import'] = array
 			'inputType' => 'text',
 			'eval'      => array('mandatory' => true, 'maxlength' => 128, 'tl_class' => 'w50'),
 			'sql'       => "varchar(128) NOT NULL default ''"
+		),
+		'type' => array
+		(
+			'label'            => &$GLOBALS['TL_LANG']['tl_entity_import']['type'],
+			'exclude'          => true,
+			'filter'           => true,
+			'inputType'        => 'select',
+			'options'          => array(
+				ENTITY_IMPORT_CONFIG_TYPE_DATABASE,
+				ENTITY_IMPORT_CONFIG_TYPE_FILE
+			),
+			'reference'        => &$GLOBALS['TL_LANG']['tl_entity_import']['type'],
+			'eval'             => array('submitOnChange' => true, 'includeBlankOption' => true),
+			'sql'              => "varchar(255) NOT NULL default ''"
 		),
 		'dbDriver'   => array
 		(
