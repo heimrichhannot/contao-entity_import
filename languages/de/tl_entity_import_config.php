@@ -50,6 +50,7 @@ $arrLang['catContao']								= array('Nachrichten-Kategorien', 'Wählen Sie hier
 $arrLang['newsArchive']								= array('Nachrichtenarchiv', 'Wählen Sie hier das Nachrichtenarchiv aus, in das die Nachrichten importiert werden sollen.');
 $arrLang['sourceFile']								= array('Quell-Datei', 'Wählen Sie hier die zu Quell-Datei für den Import aus.');
 $arrLang['delimiter']								= array('Feld-Trennzeichen', 'Geben Sie hier das Feld-Trennzeichen ein.');
+$arrLang['arrayDelimiter']							= array('Array-Trennzeichen', 'Geben Sie hier das Trennzeichen für die Umwandlung von trennzeichen-separierten Feldwerten ein. Wenn das entsprechende Häkchen in der Felderabbildung gesetzt ist, werden Werte wie "1;4;5" zu einem serialisierten Array transformiert.');
 $arrLang['enclosure']								= array('Text-Trennzeichen', 'Geben Sie hier das Text-Trennzeichen ein.');
 $arrLang['fileFieldMapping']						= array('Felderabbildung', 'Wählen Sie hier aus, welche Felder der Quelldatei auf welche der Zieltabelle abgebildet werden sollen.');
 $arrLang['fileFieldMapping']['type']				= array('Typ', 'Wählen Sie \'Spalte\', um den Wert einer Spalte in der Quell in das entsprechende Feld der Zieltabelle zu schreiben. Für einfache Werte nutzen Sie \'Wert\'.');
@@ -58,6 +59,7 @@ $arrLang['fileFieldMapping']['type']['value']		= 'Wert';
 $arrLang['fileFieldMapping']['source']				= array('Quellspalte', 'Geben Sie hier nur die Position der Spalte ein, wenn Sie als Typ \'Quellspalte\' gewählt haben. Für die erste Spalte in der Datei geben Sie bspw. 1 ein.');
 $arrLang['fileFieldMapping']['value']				= array('Wert', 'Geben Sie hier nur dann einen Wert ein, wenn Sie als Typ \'Wert\' gewählt haben.');
 $arrLang['fileFieldMapping']['target']				= array('Zielfeld', 'Wählen Sie hier das Feld in der Zieltabelle aus, in das importiert werden soll.');
+$arrLang['fileFieldMapping']['transformToArray']	= array('Zu Array<br>transformieren', 'Wählen Sie diese Option, um Werte wie \'1;4;5\' zu einem serialisierten Array zu transformieren.');
 
 /**
  * Legends

@@ -102,7 +102,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = array
 	// type palettes
 	'typepalettes' => array(
 			ENTITY_IMPORT_CONFIG_TYPE_DATABASE => '{config_legend},dbSourceTable,dbTargetTable,importerClass,purgeBeforeImport,dbFieldMapping,useTimeInterval,whereClause,sourceDir,targetDir,dbFieldFileMapping;',
-			ENTITY_IMPORT_CONFIG_TYPE_FILE => '{config_legend},sourceFile,delimiter,enclosure,dbTargetTable,importerClass,purgeBeforeImport,fileFieldMapping,sourceDir,targetDir;',
+			ENTITY_IMPORT_CONFIG_TYPE_FILE => '{config_legend},sourceFile,delimiter,enclosure,arrayDelimiter,dbTargetTable,importerClass,purgeBeforeImport,fileFieldMapping,sourceDir,targetDir;',
 	),
 	// Fields
 	'fields'      => array
@@ -403,6 +403,15 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = array
 			'eval'      => array('mandatory' => true, 'maxlength' => 1, 'tl_class' => 'w50'),
 			'sql'       => "char(1) NOT NULL default ''",
 		),
+		'arrayDelimiter' => array
+		(
+			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['arrayDelimiter'],
+			'exclude'   => true,
+			'inputType' => 'text',
+			'default' => ';',
+			'eval'      => array('maxlength' => 1, 'tl_class' => 'w50 clr'),
+			'sql'       => "char(1) NOT NULL default ''",
+		),
 		'fileFieldMapping'  => array
 		(
 			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['fileFieldMapping'],
@@ -451,6 +460,16 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = array
 						'eval'             => array
 						(
 							'style' => 'width:150px',
+						),
+					),
+					'transformToArray' => array
+					(
+						'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['fileFieldMapping']['transformToArray'],
+						'exclude'   => true,
+						'inputType' => 'checkbox',
+						'eval'      => array
+						(
+								'style' => 'width:50px',
 						),
 					),
 				),

@@ -34,3 +34,4 @@ $GLOBALS['TL_HOOKS']['initEntityImportPalettes'] = array(
  */
 define('ENTITY_IMPORT_CONFIG_TYPE_DATABASE', 'db');
 define('ENTITY_IMPORT_CONFIG_TYPE_FILE', 'file');
+define('ENTITY_IMPORT_FILE_COL_SUFFIX', 'EColE_');

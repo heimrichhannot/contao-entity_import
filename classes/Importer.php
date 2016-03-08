@@ -363,6 +363,7 @@ class Importer extends \Backend
 
 	protected function setObjectValueFromMapping(&$objItem, $value, $key)
 	{
+		$value = $this->replaceInsertTags($value, false);
 		// negate the value
 		if (substr($key, 0, 1) == '!') {
 			$key = preg_replace('/!/', '', $key, 1);

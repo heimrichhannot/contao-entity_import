@@ -3,7 +3,7 @@
 /**
  * Contao Open Source CMS
  *
- * Copyright (c) 2005-2015 Leo Feyer
+ * Copyright (c) 2005-2016 Leo Feyer
  *
  * @license LGPL-3.0+
  */
@@ -27,6 +27,7 @@ ClassLoader::addClasses(array
 	'HeimrichHannot\EntityImport\ModuleEntityImport'      => 'system/modules/entity_import/modules/ModuleEntityImport.php',
 
 	// Classes
+	'HeimrichHannot\EntityImport\CsvImporter'             => 'system/modules/entity_import/classes/CsvImporter.php',
 	'HeimrichHannot\Typort\TypoModel'                     => 'system/modules/entity_import/classes/TypoModel.php',
 	'HeimrichHannot\EntityImport\Database'                => 'system/modules/entity_import/classes/Database.php',
 	'HeimrichHannot\EntityImport\NewsImporter'            => 'system/modules/entity_import/classes/NewsImporter.php',
