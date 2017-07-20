@@ -199,7 +199,7 @@ class Importer extends \Backend
 				foreach ($GLOBALS['TL_HOOKS']['entityImportRunAfterSaving'] as $callback)
 				{
 					$this->import($callback[0]);
-					$objItem = $this->$callback[0]->$callback[1]($objItem, $objSourceItem, $this);
+					$objItem = $this->{$callback[0]}->{$callback[1]}($objItem, $objSourceItem, $this);
 				}
 			}
 		}
@@ -394,7 +394,7 @@ class Importer extends \Backend
 		if (is_array($objItem)) {
 			$objItem[$key] = $value;
 		} else {
-			$objItem->$key = $value;
+			$objItem->{$key} = $value;
 		}
 	}
 
