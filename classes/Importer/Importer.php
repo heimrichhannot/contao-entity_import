@@ -704,6 +704,14 @@ class Importer extends \Backend
         }
 
         $objFile = new \File($strRelFile);
+
+        // remove previous models with the same file name
+        if (($objModel = \FilesModel::findMultipleByPaths([$objTargetDir->path . '/' . $objFile->name])) !== null)
+        {
+            $objModel->delete();
+        }
+
+
         $objFile->copyTo($objTargetDir->path . '/' . $objFile->name);
 
         $objModel = $objFile->getModel();
