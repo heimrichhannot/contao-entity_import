@@ -7,9 +7,34 @@ abstract class TypoModel extends \Model
 
     /**
      * Primary key
+     *
      * @var string
      */
     protected static $strPk = 'uid';
+
+    /**
+     * Find records by various criteria
+     *
+     * @param mixed $strColumn  The property name
+     * @param mixed $varValue   The property value
+     * @param array $arrOptions An optional options array
+     *
+     * @return \Model\Collection|null The model collection or null if the result is empty
+     */
+    public static function findBy($strColumn, $varValue, array $arrOptions = [])
+    {
+        $arrOptions = array_merge(
+            [
+                'column' => $strColumn,
+                'value'  => $varValue,
+                'return' => 'Collection',
+            ],
+
+            $arrOptions
+        );
+
+        return static::find($arrOptions);
+    }
 
     /**
      * Find records and return the model or model collection
@@ -35,7 +60,7 @@ abstract class TypoModel extends \Model
         }
 
         $arrOptions['table'] = static::$strTable;
-        $strQuery = static::buildFindQuery($arrOptions);
+        $strQuery            = static::buildFindQuery($arrOptions);
 
         $objStatement = Database::getInstance()->prepare($strQuery);
 
@@ -56,7 +81,7 @@ abstract class TypoModel extends \Model
         }
 
         $objStatement = static::preFind($objStatement);
-        $objResult = $objStatement->execute($arrOptions['value']);
+        $objResult    = $objStatement->execute($arrOptions['value']);
 
         if ($objResult->numRows < 1)
         {
@@ -85,31 +110,5 @@ abstract class TypoModel extends \Model
             // TODO: collection contains always the same item
             return static::createCollectionFromDbResult($objResult, static::$strTable);
         }
-    }
-
-    /**
-     * Find records by various criteria
-     *
-     * @param mixed $strColumn  The property name
-     * @param mixed $varValue   The property value
-     * @param array $arrOptions An optional options array
-     *
-     * @return \Model\Collection|null The model collection or null if the result is empty
-     */
-    public static function findBy($strColumn, $varValue, array $arrOptions=array())
-    {
-        $arrOptions = array_merge
-        (
-            array
-            (
-                'column' => $strColumn,
-                'value'  => $varValue,
-                'return' => 'Collection'
-            ),
-
-            $arrOptions
-        );
-
-        return static::find($arrOptions);
     }
 }

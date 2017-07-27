@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.2] - 2017-07-27
+
+### Added
+- Contao 4 support & refactoring
+
 ## [1.2.1] - 2017-07-20
 
 ### Added

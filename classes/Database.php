@@ -2,8 +2,51 @@
 
 namespace HeimrichHannot\EntityImport;
 
-abstract class Database extends \Database
+use Doctrine\DBAL\DriverManager;
+
+class Database extends \Database
 {
+    /**
+     * Establish the database connection
+     *
+     * @param array $arrConfig The configuration array
+     *
+     * @throws \Exception If a connection cannot be established
+     */
+    protected function __construct(array $arrConfig)
+    {
+        if (version_compare(VERSION, '4.0', '<'))
+        {
+            parent::__construct($arrConfig);
+            return;
+        }
+
+        if (!empty($arrConfig))
+        {
+            $arrParams = [
+                'driver'   => 'pdo_mysql',
+                'host'     => $arrConfig['dbHost'],
+                'port'     => $arrConfig['dbPort'],
+                'user'     => $arrConfig['dbUser'],
+                'password' => $arrConfig['dbPass'],
+                'dbname'   => $arrConfig['dbDatabase'],
+                'charset'  => $arrConfig['dbCharset'],
+
+            ];
+
+            $this->resConnection = DriverManager::getConnection($arrParams);
+        }
+        else
+        {
+            $this->resConnection = \System::getContainer()->get('database_connection');
+        }
+
+        if (!is_object($this->resConnection))
+        {
+            throw new \Exception(sprintf('Could not connect to database (%s)', $this->error));
+        }
+    }
+
     /**
      * Instantiate the Database object (Factory)
      *
@@ -11,10 +54,9 @@ abstract class Database extends \Database
      *
      * @return \Database The Database object
      */
-    public static function getInstance(array $arrCustom=null)
+    public static function getInstance(array $arrCustom = null)
     {
-        $arrConfig = array
-        (
+        $arrConfig = [
             'dbDriver'   => \Config::get('dbDriver'),
             'dbHost'     => \Config::get('dbHost'),
             'dbUser'     => \Config::get('dbUser'),
@@ -24,8 +66,8 @@ abstract class Database extends \Database
             'dbCharset'  => \Config::get('dbCharset'),
             'dbPort'     => \Config::get('dbPort'),
             'dbSocket'   => \Config::get('dbSocket'),
-            'dbSqlMode'  => \Config::get('dbSqlMode')
-        );
+            'dbSqlMode'  => \Config::get('dbSqlMode'),
+        ];
 
         if (is_array($arrCustom))
         {
@@ -38,8 +80,16 @@ abstract class Database extends \Database
 
         if (!isset(static::$arrInstances[$strKey]))
         {
-            $strClass = 'Database\\' . str_replace(' ', '_', ucwords(str_replace('_', ' ', strtolower($arrConfig['dbDriver']))));
-            static::$arrInstances[$strKey] = new $strClass($arrConfig);
+            if (version_compare(VERSION, '4.0', '<'))
+            {
+                $strClass = 'Database\\' . str_replace(' ', '_', ucwords(str_replace('_', ' ', strtolower($arrConfig['dbDriver']))));
+            }
+            else
+            {
+                $strClass = 'Database';
+            }
+
+            static::$arrInstances[$strKey] = new static($arrConfig);
         }
 
         return static::$arrInstances[$strKey];

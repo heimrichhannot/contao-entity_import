@@ -3,4 +3,4 @@
 /**
  * Backend modules
  */
-$GLOBALS['TL_LANG']['MOD']['entity_import'] = array('EntityImport', 'Import entities from one database into another.');
+$GLOBALS['TL_LANG']['MOD']['entity_import'] = ['EntityImport', 'Import entities from one database into another.'];

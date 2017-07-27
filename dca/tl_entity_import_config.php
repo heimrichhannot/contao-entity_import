@@ -3,699 +3,666 @@
 /**
  * Table tl_extension
  */
-$GLOBALS['TL_DCA']['tl_entity_import_config'] = array
-(
+$GLOBALS['TL_DCA']['tl_entity_import_config'] = [
 
-	// Config
-	'config'      => array
-	(
-		'dataContainer'    => 'Table',
-		'enableVersioning' => true,
-		'ptable'           => 'tl_entity_import',
-		'sql'              => array
-		(
-			'keys' => array
-			(
-				'id'  => 'primary',
-				'pid' => 'index',
-			),
-		),
-		'onload_callback'  => array(array('tl_entity_import_config', 'initPalette')),
-	),
-	// List
-	'list'        => array
-	(
-		'sorting'           => array
-		(
-			'mode'                  => 4,
-			'fields'                => array('title DESC'),
-			'headerFields'          => array('title'),
-			'panelLayout'           => 'filter;sort,search,limit',
-			'child_record_callback' => array('tl_entity_import_config', 'listEntityImportConfig'),
-			'child_record_class'    => 'no_padding',
-			'disableGrouping'       => true,
-		),
-		'label'             => array
-		(
-			'fields'         => array('title', 'type'),
-			'format'         => '%s <span style="color:#b3b3b3; padding-left:3px;">[%s]</span>',
-			'label_callback' => array('tl_entity_import_config', 'addDate'),
-		),
-		'global_operations' => array
-		(
-			'all' => array
-			(
-				'label'      => &$GLOBALS['TL_LANG']['MSC']['all'],
-				'href'       => 'act=select',
-				'class'      => 'header_edit_all',
-				'attributes' => 'onclick="Backend.getScrollOffset();" accesskey="e"',
-			),
-		),
-		'operations'        => array
-		(
-			'edit'   => array
-			(
-				'label' => &$GLOBALS['TL_LANG']['tl_entity_import_config']['edit'],
-				'href'  => 'act=edit',
-				'icon'  => 'edit.gif',
-			),
-			'copy'   => array
-			(
-				'label' => &$GLOBALS['TL_LANG']['tl_entity_import_config']['copy'],
-				'href'  => 'act=copy',
-				'icon'  => 'copy.gif',
-			),
-			'delete' => array
-			(
-				'label'      => &$GLOBALS['TL_LANG']['tl_entity_import_config']['delete'],
-				'href'       => 'act=delete',
-				'icon'       => 'delete.gif',
-				'attributes' => 'onclick="if (!confirm(\'' . $GLOBALS['TL_LANG']['MSC']['deleteConfirm']
-								. '\')) return false; Backend.getScrollOffset();"',
-			),
-			'show'   => array
-			(
-				'label' => &$GLOBALS['TL_LANG']['tl_entity_import_config']['show'],
-				'href'  => 'act=show',
-				'icon'  => 'show.gif',
-			),
-			'import' => array
-			(
-				'label' => &$GLOBALS['TL_LANG']['tl_entity_import_config']['import'],
-				'href'  => 'key=import',
-				'icon'  => 'system/modules/devtools/assets/apply.gif',
-			),
-		),
-	),
-	// Palettes
-	'palettes'    => array
-	(
-		'__selector__' => array('type', 'useTimeInterval', 'purgeBeforeImport'),
-		'default'      => '{title_legend},title,description;',
-	),
-	// Subpalettes
-	'subpalettes' => array
-	(
-		'useTimeInterval' => 'start,end',
-		'purgeBeforeImport' => 'whereClausePurge'
-	),
-	// type palettes
-	'typepalettes' => array(
-			ENTITY_IMPORT_CONFIG_TYPE_DATABASE => '{config_legend},dbSourceTable,dbTargetTable,importerClass,purgeBeforeImport,dbFieldMapping,useTimeInterval,whereClause,sourceDir,targetDir,dbFieldFileMapping;',
-			ENTITY_IMPORT_CONFIG_TYPE_FILE => '{config_legend},sourceFile,delimiter,enclosure,arrayDelimiter,dbTargetTable,importerClass,purgeBeforeImport,fileFieldMapping,sourceDir,targetDir;',
-	),
-	// Fields
-	'fields'      => array
-	(
-		'id'              => array
-		(
-			'sql' => "int(10) unsigned NOT NULL auto_increment",
-		),
-		'pid'             => array
-		(
-			'foreignKey' => 'tl_entity_import.title',
-			'sql'        => "int(10) unsigned NOT NULL default '0'",
-			'relation'   => array('type' => 'belongsTo', 'load' => 'eager'),
-		),
-		'tstamp'          => array
-		(
-			'sql' => "int(10) unsigned NOT NULL default '0'",
-		),
-		'title'           => array
-		(
-			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['title'],
-			'search'    => true,
-			'exclude'   => true,
-			'inputType' => 'text',
-			'eval'      => array('mandatory' => true, 'maxlength' => 64, 'tl_class' => 'w50'),
-			'sql'       => "varchar(64) NOT NULL default ''",
-		),
-		'description'     => array
-		(
-			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['description'],
-			'search'    => true,
-			'exclude'   => true,
-			'inputType' => 'text',
-			'eval'      => array('maxlength' => 255, 'tl_class' => 'long clr'),
-			'sql'       => "varchar(255) NOT NULL default ''",
-		),
-		'dbSourceTable'   => array
-		(
-			'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbSourceTable'],
-			'search'           => true,
-			'exclude'          => true,
-			'inputType'        => 'select',
-			'eval'             => array('mandatory' => true, 'submitOnChange' => true, 'tl_class' => 'w50'),
-			'options_callback' => array('tl_entity_import_config', 'getSourceTables'),
-			'sql'              => "varchar(255) NOT NULL default ''",
-		),
-		'dbTargetTable'   => array
-		(
-			'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbTargetTable'],
-			'search'           => true,
-			'exclude'          => true,
-			'inputType'        => 'select',
-			'eval'             => array('mandatory' => true, 'submitOnChange' => true, 'tl_class' => 'w50'),
-			'options_callback' => array('tl_entity_import_config', 'getTargetTables'),
-			'sql'              => "varchar(255) NOT NULL default ''",
-		),
-		'importerClass'   => array
-		(
-			'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['importerClass'],
-			'inputType'        => 'select',
-			'eval'             => array('mandatory' => true, 'tl_class' => 'w50 clr', 'decodeEntities' => true),
-			'options_callback' => array('tl_entity_import_config', 'getImporterClasses'),
-			'sql'              => "varchar(255) NOT NULL default ''",
-		),
-		'purgeBeforeImport' => array
-		(
-			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['purgeBeforeImport'],
-			'exclude'   => true,
-			'inputType' => 'checkbox',
-			'eval'      => array('submitOnChange' => true, 'tl_class' => 'w50'),
-			'sql'       => "char(1) NOT NULL default ''",
-		),
-		'whereClausePurge'     => array
-		(
-			'label'       => &$GLOBALS['TL_LANG']['tl_entity_import_config']['whereClausePurge'],
-			'inputType'   => 'textarea',
-			'exclude'     => true,
-			'eval'        => array('class' => 'monospace', 'rte' => 'ace', 'tl_class' => 'clr long'),
-			'explanation' => 'insertTags',
-			'sql'         => "text NULL",
-		),
-		'dbFieldMapping'  => array
-		(
-			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping'],
-			'inputType' => 'multiColumnWizard',
-			'exclude'   => true,
-			'eval'      => array
-			(
-				'tl_class'     => 'clr',
-				'columnFields' => array
-				(
-					'type'   => array
-					(
-						'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping']['type'],
-						'inputType' => 'select',
-						'options'   => array('source', 'foreignKey', 'value'),
-						'reference' => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping']['type'],
-						'eval'      => array
-						(
-							'style' => 'width:150px',
-						),
-					),
-					'source' => array
-					(
-						'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping']['source'],
-						'inputType'        => 'select',
-						'options_callback' => array('tl_entity_import_config', 'getSourceFields'),
-						'eval'             => array
-						(
-							'style'              => 'width:150px',
-							'includeBlankOption' => true,
-						),
-					),
-					'value'  => array
-					(
-						'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping']['value'],
-						'inputType' => 'text',
-						'eval'      => array
-						(
-							'style' => 'width:150px',
-						),
-					),
-					'target' => array
-					(
-						'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping']['target'],
-						'inputType'        => 'select',
-						'options_callback' => array('tl_entity_import_config', 'getTargetFields'),
-						'eval'             => array
-						(
-							'style' => 'width:150px',
-						),
-					),
-				),
-			),
-			'sql'       => "blob NULL",
-		),
-		//		'pids'           => array
-		//		(
-		//			'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['pids'],
-		//			'inputType'        => 'checkbox',
-		//			'exclude'          => true,
-		//			'eval'             => array('mandatory' => true, 'submitOnChange' => true, 'multiple' => true),
-		//			'options_callback' => array('tl_entity_import_config', 'getPidsFromTable'),
-		//			'sql'              => "blob NULL",
-		//		),
-		'useTimeInterval' => array
-		(
-			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['useTimeInterval'],
-			'exclude'   => true,
-			'inputType' => 'checkbox',
-			'eval'      => array('submitOnChange' => true),
-			'sql'       => "char(1) NOT NULL default ''",
-		),
-		'start'           => array
-		(
-			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['start'],
-			'inputType' => 'text',
-			'exclude'   => true,
-			'eval'      => array('rgxp' => 'datim', 'tl_class' => 'w50', 'datepicker' => true),
-			'sql'       => "int(10) unsigned NULL",
-		),
-		'end'             => array
-		(
-			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['end'],
-			'inputType' => 'text',
-			'exclude'   => true,
-			'eval'      => array('rgxp' => 'datim', 'tl_class' => 'w50', 'datepicker' => true),
-			'sql'       => "int(10) unsigned NULL",
-		),
-		'whereClause'     => array
-		(
-			'label'       => &$GLOBALS['TL_LANG']['tl_entity_import_config']['whereClause'],
-			'inputType'   => 'textarea',
-			'exclude'     => true,
-			'eval'        => array('class' => 'monospace', 'rte' => 'ace'),
-			'explanation' => 'insertTags',
-			'sql'         => "text NULL",
-		),
-		'sourceDir'       => array
-		(
-			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['sourceDir'],
-			'inputType' => 'fileTree',
-			'exclude'   => true,
-			'eval'      => array('files' => false, 'fieldType' => 'radio', 'tl_class' => 'w50'),
-			'sql'       => "binary(16) NULL",
-		),
-		'targetDir'       => array
-		(
-			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['targetDir'],
-			'inputType' => 'fileTree',
-			'exclude'   => true,
-			'eval'      => array('files' => false, 'fieldType' => 'radio', 'tl_class' => 'w50'),
-			'sql'       => "binary(16) NULL",
-		),
-		'dbFieldFileMapping'  => array
-		(
-			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldFileMapping'],
-			'inputType' => 'multiColumnWizard',
-			'exclude'   => true,
-			'eval'      => array
-			(
-				'tl_class'     => 'clr',
-				'columnFields' => array
-				(
-					'type'   => array
-					(
-						'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping']['type'],
-						'inputType' => 'select',
-						'options'   => array('source', 'foreignKey', 'value'),
-						'reference' => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping']['type'],
-						'eval'      => array
-						(
-							'style' => 'width:150px',
-						),
-					),
-					'source' => array
-					(
-						'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping']['source'],
-						'inputType'        => 'select',
-						'options_callback' => array('tl_entity_import_config', 'getSourceFields'),
-						'eval'             => array
-						(
-							'style'              => 'width:150px',
-							'includeBlankOption' => true,
-						),
-					),
-					'value'  => array
-					(
-						'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping']['value'],
-						'inputType' => 'text',
-						'eval'      => array
-						(
-							'style' => 'width:150px',
-						),
-					),
-					'target' => array
-					(
-						'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping']['target'],
-						'inputType'        => 'select',
-						'options_callback' => array('tl_entity_import_config', 'getTargetFileFields'),
-						'eval'             => array
-						(
-							'style' => 'width:150px',
-						),
-					),
-				),
-			),
-			'sql'       => "blob NULL",
-		),
-		'catTypo'         => array
-		(
-			'label'            => &$GLOBALS['TL_LANG']['tl_member']['catTypo'],
-			'exclude'          => true,
-			'inputType'        => 'checkboxWizard',
-			'eval'             => array('multiple' => true, 'tl_class' => 'w50'),
-			'options_callback' => array('tl_entity_import_config', 'getTypoCategories'),
-			'sql'              => "blob NULL",
-		),
-		'catContao'       => array
-		(
-			'label'      => &$GLOBALS['TL_LANG']['tl_entity_import_config']['catContao'],
-			'exclude'    => true,
-			'inputType'  => 'treePicker',
-			'foreignKey' => 'tl_news_category.title',
-			'eval'       => array(
-				'multiple'     => true,
-				'fieldType'    => 'checkbox',
-				'foreignTable' => 'tl_news_category',
-				'titleField'   => 'title',
-				'searchField'  => 'title',
-				'managerHref'  => 'do=news&table=tl_news_category',
-			),
-			'sql'        => "blob NULL",
-		),
-		'sourceFile' => array
-		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_entity_import_config']['sourceFile'],
-			'exclude'                 => true,
-			'inputType'               => 'fileTree',
-			'eval'                    => array('filesOnly'=>true, 'extensions'=>Config::get('validEntityImportTypes'), 'fieldType'=>'radio', 'mandatory'=>true, 'tl_class' => 'w50'),
-			'sql'                     => "binary(16) NULL"
-		),
-		'delimiter'           => array
-		(
-			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['delimiter'],
-			'exclude'   => true,
-			'inputType' => 'text',
-			'default' => ',',
-			'eval'      => array('mandatory' => true, 'maxlength' => 1, 'tl_class' => 'w50 clr'),
-			'sql'       => "char(1) NOT NULL default ''",
-		),
-		'enclosure'           => array
-		(
-			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['enclosure'],
-			'exclude'   => true,
-			'default' => '"',
-			'inputType' => 'text',
-			'eval'      => array('mandatory' => true, 'maxlength' => 1, 'tl_class' => 'w50'),
-			'sql'       => "char(1) NOT NULL default ''",
-		),
-		'arrayDelimiter' => array
-		(
-			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['arrayDelimiter'],
-			'exclude'   => true,
-			'inputType' => 'text',
-			'default' => ';',
-			'eval'      => array('maxlength' => 1, 'tl_class' => 'w50 clr'),
-			'sql'       => "char(1) NOT NULL default ''",
-		),
-		'fileFieldMapping'  => array
-		(
-			'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['fileFieldMapping'],
-			'inputType' => 'multiColumnWizard',
-			'exclude'   => true,
-			'eval'      => array
-			(
-				'tl_class'     => 'clr',
-				'columnFields' => array
-				(
-					'type'   => array
-					(
-						'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['fileFieldMapping']['type'],
-						'inputType' => 'select',
-						'options'   => array('source', 'value'),
-						'reference' => &$GLOBALS['TL_LANG']['tl_entity_import_config']['fileFieldMapping']['type'],
-						'eval'      => array
-						(
-							'style' => 'width:150px',
-						),
-					),
-					'source' => array
-					(
-						'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['fileFieldMapping']['source'],
-						'inputType'        => 'text',
-						'eval'             => array
-						(
-							'style'     => 'width:150px',
-							'rgxp' => 'digit'
-						),
-					),
-					'value'  => array
-					(
-						'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['fileFieldMapping']['value'],
-						'inputType' => 'text',
-						'eval'      => array
-						(
-							'style' => 'width:150px',
-						),
-					),
-					'target' => array
-					(
-						'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['fileFieldMapping']['target'],
-						'inputType'        => 'select',
-						'options_callback' => array('tl_entity_import_config', 'getTargetFields'),
-						'eval'             => array
-						(
-							'style' => 'width:150px',
-						),
-					),
-					'transformToArray' => array
-					(
-						'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['fileFieldMapping']['transformToArray'],
-						'exclude'   => true,
-						'inputType' => 'checkbox',
-						'eval'      => array
-						(
-								'style' => 'width:50px',
-						),
-					),
-				),
-			),
-			'sql'       => "blob NULL",
-		),
-	),
-);
+    // Config
+    'config'       => [
+        'dataContainer'    => 'Table',
+        'enableVersioning' => true,
+        'ptable'           => 'tl_entity_import',
+        'sql'              => [
+            'keys' => [
+                'id'  => 'primary',
+                'pid' => 'index',
+            ],
+        ],
+        'onload_callback'  => [['tl_entity_import_config', 'initPalette']],
+    ],
+    // List
+    'list'         => [
+        'sorting'           => [
+            'mode'                  => 4,
+            'fields'                => ['title DESC'],
+            'headerFields'          => ['title'],
+            'panelLayout'           => 'filter;sort,search,limit',
+            'child_record_callback' => ['tl_entity_import_config', 'listEntityImportConfig'],
+            'child_record_class'    => 'no_padding',
+            'disableGrouping'       => true,
+        ],
+        'label'             => [
+            'fields'         => ['title', 'type'],
+            'format'         => '%s <span style="color:#b3b3b3; padding-left:3px;">[%s]</span>',
+            'label_callback' => ['tl_entity_import_config', 'addDate'],
+        ],
+        'global_operations' => [
+            'all' => [
+                'label'      => &$GLOBALS['TL_LANG']['MSC']['all'],
+                'href'       => 'act=select',
+                'class'      => 'header_edit_all',
+                'attributes' => 'onclick="Backend.getScrollOffset();" accesskey="e"',
+            ],
+        ],
+        'operations'        => [
+            'edit'   => [
+                'label' => &$GLOBALS['TL_LANG']['tl_entity_import_config']['edit'],
+                'href'  => 'act=edit',
+                'icon'  => 'edit.gif',
+            ],
+            'copy'   => [
+                'label' => &$GLOBALS['TL_LANG']['tl_entity_import_config']['copy'],
+                'href'  => 'act=copy',
+                'icon'  => 'copy.gif',
+            ],
+            'delete' => [
+                'label'      => &$GLOBALS['TL_LANG']['tl_entity_import_config']['delete'],
+                'href'       => 'act=delete',
+                'icon'       => 'delete.gif',
+                'attributes' => 'onclick="if (!confirm(\'' . $GLOBALS['TL_LANG']['MSC']['deleteConfirm'] . '\')) return false; Backend.getScrollOffset();"',
+            ],
+            'show'   => [
+                'label' => &$GLOBALS['TL_LANG']['tl_entity_import_config']['show'],
+                'href'  => 'act=show',
+                'icon'  => 'show.gif',
+            ],
+            'import' => [
+                'label' => &$GLOBALS['TL_LANG']['tl_entity_import_config']['import'],
+                'href'  => 'key=import',
+                'icon'  => version_compare(VERSION, '4.0', '<') ? 'system/modules/devtools/assets/apply.gif' : 'ok.svg',
+            ],
+        ],
+    ],
+    // Palettes
+    'palettes'     => [
+        '__selector__' => ['type', 'useTimeInterval', 'purgeBeforeImport'],
+        'default'      => '{title_legend},title,description;',
+    ],
+    // Subpalettes
+    'subpalettes'  => [
+        'useTimeInterval'   => 'start,end',
+        'purgeBeforeImport' => 'whereClausePurge',
+    ],
+    // type palettes
+    'typepalettes' => [
+        ENTITY_IMPORT_CONFIG_TYPE_DATABASE => '{config_legend},dbSourceTable,dbTargetTable,importerClass,purgeBeforeImport,dbFieldMapping,useTimeInterval,whereClause,sourceDir,targetDir,dbFieldFileMapping;',
+        ENTITY_IMPORT_CONFIG_TYPE_FILE     => '{config_legend},sourceFile,delimiter,enclosure,arrayDelimiter,dbTargetTable,importerClass,purgeBeforeImport,fileFieldMapping,sourceDir,targetDir;',
+    ],
+    // Fields
+    'fields'       => [
+        'id'                 => [
+            'sql' => "int(10) unsigned NOT NULL auto_increment",
+        ],
+        'pid'                => [
+            'foreignKey' => 'tl_entity_import.title',
+            'sql'        => "int(10) unsigned NOT NULL default '0'",
+            'relation'   => ['type' => 'belongsTo', 'load' => 'eager'],
+        ],
+        'tstamp'             => [
+            'sql' => "int(10) unsigned NOT NULL default '0'",
+        ],
+        'title'              => [
+            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['title'],
+            'search'    => true,
+            'exclude'   => true,
+            'inputType' => 'text',
+            'eval'      => ['mandatory' => true, 'maxlength' => 64, 'tl_class' => 'w50'],
+            'sql'       => "varchar(64) NOT NULL default ''",
+        ],
+        'description'        => [
+            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['description'],
+            'search'    => true,
+            'exclude'   => true,
+            'inputType' => 'text',
+            'eval'      => ['maxlength' => 255, 'tl_class' => 'long clr'],
+            'sql'       => "varchar(255) NOT NULL default ''",
+        ],
+        'dbSourceTable'      => [
+            'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbSourceTable'],
+            'search'           => true,
+            'exclude'          => true,
+            'inputType'        => 'select',
+            'eval'             => ['mandatory' => true, 'submitOnChange' => true, 'tl_class' => 'w50'],
+            'options_callback' => ['tl_entity_import_config', 'getSourceTables'],
+            'sql'              => "varchar(255) NOT NULL default ''",
+        ],
+        'dbTargetTable'      => [
+            'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbTargetTable'],
+            'search'           => true,
+            'exclude'          => true,
+            'inputType'        => 'select',
+            'eval'             => ['mandatory' => true, 'submitOnChange' => true, 'tl_class' => 'w50'],
+            'options_callback' => ['tl_entity_import_config', 'getTargetTables'],
+            'sql'              => "varchar(255) NOT NULL default ''",
+        ],
+        'importerClass'      => [
+            'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['importerClass'],
+            'inputType'        => 'select',
+            'eval'             => ['mandatory' => true, 'tl_class' => 'w50 clr', 'decodeEntities' => true, 'submitOnChange' => true],
+            'options_callback' => ['tl_entity_import_config', 'getImporterClasses'],
+            'sql'              => "varchar(255) NOT NULL default ''",
+        ],
+        'purgeBeforeImport'  => [
+            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['purgeBeforeImport'],
+            'exclude'   => true,
+            'inputType' => 'checkbox',
+            'eval'      => ['submitOnChange' => true, 'tl_class' => 'w50'],
+            'sql'       => "char(1) NOT NULL default ''",
+        ],
+        'whereClausePurge'   => [
+            'label'       => &$GLOBALS['TL_LANG']['tl_entity_import_config']['whereClausePurge'],
+            'inputType'   => 'textarea',
+            'exclude'     => true,
+            'eval'        => ['class' => 'monospace', 'rte' => 'ace', 'tl_class' => 'clr long'],
+            'explanation' => 'insertTags',
+            'sql'         => "text NULL",
+        ],
+        'dbFieldMapping'     => [
+            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping'],
+            'inputType' => 'multiColumnEditor',
+            'exclude'   => true,
+            'eval'      => [
+                'tl_class'          => 'clr',
+                'multiColumnEditor' => [
+                    'fields' => [
+
+                        'type'      => [
+                            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping']['type'],
+                            'inputType' => 'select',
+                            'options'   => ['source', 'foreignKey', 'value', 'sql'],
+                            'reference' => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping']['type'],
+                            'eval'      => [
+                                'style' => 'width:150px',
+                            ],
+                        ],
+                        'source'    => [
+                            'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping']['source'],
+                            'inputType'        => 'select',
+                            'options_callback' => ['tl_entity_import_config', 'getSourceFields'],
+                            'eval'             => [
+                                'style'              => 'width:150px',
+                                'includeBlankOption' => true,
+                            ],
+                        ],
+                        'value'     => [
+                            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping']['value'],
+                            'inputType' => 'text',
+                            'eval'      => [
+                                'style'          => 'width:150px',
+                                'decodeEntities' => true,
+                            ],
+                        ],
+                        'target'    => [
+                            'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping']['target'],
+                            'inputType'        => 'select',
+                            'options_callback' => ['tl_entity_import_config', 'getTargetFields'],
+                            'eval'             => [
+                                'style' => 'width:150px',
+                            ],
+                        ],
+                        'transform' => [
+                            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping']['transform'],
+                            'inputType' => 'text',
+                            'eval'      => [
+                                'style'          => 'width:150px',
+                                'decodeEntities' => true,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'sql'       => "blob NULL",
+        ],
+        //		'pids'           => array
+        //		(
+        //			'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['pids'],
+        //			'inputType'        => 'checkbox',
+        //			'exclude'          => true,
+        //			'eval'             => array('mandatory' => true, 'submitOnChange' => true, 'multiple' => true),
+        //			'options_callback' => array('tl_entity_import_config', 'getPidsFromTable'),
+        //			'sql'              => "blob NULL",
+        //		),
+        'useTimeInterval'    => [
+            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['useTimeInterval'],
+            'exclude'   => true,
+            'inputType' => 'checkbox',
+            'eval'      => ['submitOnChange' => true, 'tl_class' => 'w50'],
+            'sql'       => "char(1) NOT NULL default ''",
+        ],
+        'start'              => [
+            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['start'],
+            'inputType' => 'text',
+            'exclude'   => true,
+            'eval'      => ['rgxp' => 'datim', 'tl_class' => 'w50', 'datepicker' => true],
+            'sql'       => "int(10) unsigned NULL",
+        ],
+        'end'                => [
+            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['end'],
+            'inputType' => 'text',
+            'exclude'   => true,
+            'eval'      => ['rgxp' => 'datim', 'tl_class' => 'w50', 'datepicker' => true],
+            'sql'       => "int(10) unsigned NULL",
+        ],
+        'whereClause'        => [
+            'label'       => &$GLOBALS['TL_LANG']['tl_entity_import_config']['whereClause'],
+            'inputType'   => 'textarea',
+            'exclude'     => true,
+            'eval'        => ['class' => 'monospace', 'rte' => 'ace', 'tl_class' => 'clr'],
+            'explanation' => 'insertTags',
+            'sql'         => "text NULL",
+        ],
+        'sourceDir'          => [
+            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['sourceDir'],
+            'inputType' => 'fileTree',
+            'exclude'   => true,
+            'eval'      => ['files' => false, 'fieldType' => 'radio', 'tl_class' => 'clr'],
+            'sql'       => "binary(16) NULL",
+        ],
+        'targetDir'          => [
+            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['targetDir'],
+            'inputType' => 'fileTree',
+            'exclude'   => true,
+            'eval'      => ['files' => false, 'fieldType' => 'radio', 'tl_class' => 'clr'],
+            'sql'       => "binary(16) NULL",
+        ],
+        'dbFieldFileMapping' => [
+            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping'],
+            'inputType' => 'multiColumnEditor',
+            'exclude'   => true,
+            'eval'      => [
+                'tl_class'          => 'clr',
+                'multiColumnEditor' => [
+                    'fields' => [
+                        'type'   => [
+                            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping']['type'],
+                            'inputType' => 'select',
+                            'options'   => ['source', 'foreignKey', 'value'],
+                            'reference' => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping']['type'],
+                            'eval'      => [
+                                'chosen'     => true,
+                                'groupStyle' => 'width:150px',
+                            ],
+                        ],
+                        'source' => [
+                            'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping']['source'],
+                            'inputType'        => 'select',
+                            'options_callback' => ['tl_entity_import_config', 'getSourceFields'],
+                            'eval'             => [
+                                'chosen'             => true,
+                                'groupStyle'         => 'width:150px',
+                                'includeBlankOption' => true,
+                            ],
+                        ],
+                        'value'  => [
+                            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping']['value'],
+                            'inputType' => 'text',
+                            'eval'      => [
+                                'groupStyle'     => 'width:150px',
+                                'decodeEntities' => true,
+                            ],
+                        ],
+                        'target' => [
+                            'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping']['target'],
+                            'inputType'        => 'select',
+                            'options_callback' => ['tl_entity_import_config', 'getTargetFileFields'],
+                            'eval'             => [
+                                'chosen'     => true,
+                                'groupStyle' => 'width:150px',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'sql'       => "blob NULL",
+        ],
+        'catTypo'            => [
+            'label'            => &$GLOBALS['TL_LANG']['tl_member']['catTypo'],
+            'exclude'          => true,
+            'inputType'        => 'checkboxWizard',
+            'eval'             => ['multiple' => true, 'tl_class' => 'w50'],
+            'options_callback' => ['tl_entity_import_config', 'getTypoCategories'],
+            'sql'              => "blob NULL",
+        ],
+        'catContao'          => [
+            'label'      => &$GLOBALS['TL_LANG']['tl_entity_import_config']['catContao'],
+            'exclude'    => true,
+            'inputType'  => 'treePicker',
+            'foreignKey' => 'tl_news_category.title',
+            'eval'       => [
+                'multiple'     => true,
+                'fieldType'    => 'checkbox',
+                'foreignTable' => 'tl_news_category',
+                'titleField'   => 'title',
+                'searchField'  => 'title',
+                'managerHref'  => 'do=news&table=tl_news_category',
+            ],
+            'sql'        => "blob NULL",
+        ],
+        'sourceFile'         => [
+            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['sourceFile'],
+            'exclude'   => true,
+            'inputType' => 'fileTree',
+            'eval'      => ['filesOnly' => true, 'extensions' => Config::get('validEntityImportTypes'), 'fieldType' => 'radio', 'mandatory' => true, 'tl_class' => 'w50'],
+            'sql'       => "binary(16) NULL",
+        ],
+        'delimiter'          => [
+            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['delimiter'],
+            'exclude'   => true,
+            'inputType' => 'text',
+            'default'   => ',',
+            'eval'      => ['mandatory' => true, 'maxlength' => 1, 'tl_class' => 'w50 clr'],
+            'sql'       => "char(1) NOT NULL default ''",
+        ],
+        'enclosure'          => [
+            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['enclosure'],
+            'exclude'   => true,
+            'default'   => '"',
+            'inputType' => 'text',
+            'eval'      => ['mandatory' => true, 'maxlength' => 1, 'tl_class' => 'w50'],
+            'sql'       => "char(1) NOT NULL default ''",
+        ],
+        'arrayDelimiter'     => [
+            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['arrayDelimiter'],
+            'exclude'   => true,
+            'inputType' => 'text',
+            'default'   => ';',
+            'eval'      => ['maxlength' => 1, 'tl_class' => 'w50 clr'],
+            'sql'       => "char(1) NOT NULL default ''",
+        ],
+        'fileFieldMapping'   => [
+            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['fileFieldMapping'],
+            'inputType' => 'multiColumnEditor',
+            'exclude'   => true,
+            'eval'      => [
+                'tl_class'          => 'clr',
+                'multiColumnEditor' => [
+                    'fields' => [
+                        'type'             => [
+                            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['fileFieldMapping']['type'],
+                            'inputType' => 'select',
+                            'options'   => ['source', 'value'],
+                            'reference' => &$GLOBALS['TL_LANG']['tl_entity_import_config']['fileFieldMapping']['type'],
+                            'eval'      => [
+                                'style' => 'width:150px',
+                            ],
+                        ],
+                        'source'           => [
+                            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['fileFieldMapping']['source'],
+                            'inputType' => 'text',
+                            'eval'      => [
+                                'style' => 'width:150px',
+                                'rgxp'  => 'digit',
+                            ],
+                        ],
+                        'value'            => [
+                            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['fileFieldMapping']['value'],
+                            'inputType' => 'text',
+                            'eval'      => [
+                                'style' => 'width:150px',
+                            ],
+                        ],
+                        'target'           => [
+                            'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['fileFieldMapping']['target'],
+                            'inputType'        => 'select',
+                            'options_callback' => ['tl_entity_import_config', 'getTargetFields'],
+                            'eval'             => [
+                                'style' => 'width:150px',
+                            ],
+                        ],
+                        'transformToArray' => [
+                            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['fileFieldMapping']['transformToArray'],
+                            'exclude'   => true,
+                            'inputType' => 'checkbox',
+                            'eval'      => [
+                                'style' => 'width:50px',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'sql'       => "blob NULL",
+        ],
+    ],
+];
 
 
 class tl_entity_import_config extends \Backend
 {
-	public static function initPalette()
-	{
-		$objEntityImportConfig = \HeimrichHannot\EntityImport\EntityImportConfigModel::findByPk(\Input::get('id'));
-		$arrDca                = &$GLOBALS['TL_DCA']['tl_entity_import_config'];
-		$strParentType = \HeimrichHannot\EntityImport\EntityImportModel::findByPk($objEntityImportConfig->pid)->type;
+    public static function initPalette()
+    {
+        $objEntityImportConfig = \HeimrichHannot\EntityImport\EntityImportConfigModel::findByPk(\Input::get('id'));
+        $arrDca                = &$GLOBALS['TL_DCA']['tl_entity_import_config'];
+        $strParentType         = \HeimrichHannot\EntityImport\EntityImportModel::findByPk($objEntityImportConfig->pid)->type;
 
-		// add default palettes
-		$arrDca['palettes']['default'] .= $arrDca['typepalettes'][$strParentType];
+        // add default palettes
+        $arrDca['palettes']['default'] .= $arrDca['typepalettes'][$strParentType];
 
-		// HOOK: add custom logic
-		if (isset($GLOBALS['TL_HOOKS']['initEntityImportPalettes']) && is_array($GLOBALS['TL_HOOKS']['initEntityImportPalettes'])) {
-			foreach ($GLOBALS['TL_HOOKS']['initEntityImportPalettes'] as $arrCallback) {
-				if (($objCallback = \Controller::importStatic($arrCallback[0])) !== null) {
-					$objCallback->{$arrCallback[1]}($objEntityImportConfig, $arrDca);
-				}
-			}
-		}
-	}
+        // HOOK: add custom logic
+        if (isset($GLOBALS['TL_HOOKS']['initEntityImportPalettes']) && is_array($GLOBALS['TL_HOOKS']['initEntityImportPalettes']))
+        {
+            foreach ($GLOBALS['TL_HOOKS']['initEntityImportPalettes'] as $arrCallback)
+            {
+                if (($objCallback = \Controller::importStatic($arrCallback[0])) !== null)
+                {
+                    $objCallback->{$arrCallback[1]}($objEntityImportConfig, $arrDca);
+                }
+            }
+        }
+    }
 
-	public static function initNewsPalette($objEntityImportConfig, &$arrDca)
-	{
-		switch ($objEntityImportConfig->dbTargetTable) {
-			case 'tl_news':
-				$arrDca['palettes']['default'] .= '{category_legend},catContao';
-				break;
-		}
-	}
+    public static function initNewsPalette($objEntityImportConfig, &$arrDca)
+    {
+        switch ($objEntityImportConfig->dbTargetTable)
+        {
+            case 'tl_news':
+                $arrDca['palettes']['default'] .= '{category_legend},catContao';
+                break;
+        }
+    }
 
-	public function getSourceFields($dc)
-	{
-		$arrOptions = array();
+    public static function getImporterClasses()
+    {
+        $arrOptions = [];
 
-		if ($dc->activeRecord->dbSourceTable == null) {
-			return $arrOptions;
-		}
+        $classes = $GLOBALS['ENTITY_IMPORTER'];
 
-		$arrFields = \HeimrichHannot\EntityImport\Database::getInstance(
-			\HeimrichHannot\EntityImport\EntityImportModel::findByPk($dc->activeRecord->pid)->row()
-		)->listFields($dc->activeRecord->dbSourceTable);
+        foreach ($classes as $strClass => $strName)
+        {
+            if (!@class_exists($strClass))
+            {
+                continue;
+            }
 
-		if (!is_array($arrFields) || empty($arrFields)) {
-			return $arrOptions;
-		}
+            $arrOptions[$strClass] = $strName;
+        }
 
-		foreach ($arrFields as $arrField) {
-			if (in_array($arrField['type'], array('index'))) {
-				continue;
-			}
+        asort($arrOptions);
 
-			$arrOptions[$arrField['name']] = $arrField['name'] . ' [' . $arrField['origtype'] . ']';
-		}
+        return $arrOptions;
+    }
 
-		return $arrOptions;
-	}
+    public function getSourceFields($dc)
+    {
+        $arrOptions = [];
+
+        $objModel = \HeimrichHannot\EntityImport\EntityImportConfigModel::findByPk($dc->id);
+
+        if ($objModel === null || $objModel->dbSourceTable == null)
+        {
+            return $arrOptions;
+        }
+
+        $arrFields = \HeimrichHannot\EntityImport\Database::getInstance(
+            \HeimrichHannot\EntityImport\EntityImportModel::findByPk($objModel->pid)->row()
+        )->listFields($objModel->dbSourceTable);
+
+        if (!is_array($arrFields) || empty($arrFields))
+        {
+            return $arrOptions;
+        }
+
+        foreach ($arrFields as $arrField)
+        {
+            if (in_array($arrField['type'], ['index']))
+            {
+                continue;
+            }
+
+            $arrOptions[$arrField['name']] = $arrField['name'] . ' [' . $arrField['origtype'] . ']';
+        }
+
+        return $arrOptions;
+    }
+
+    public function getTargetFields($dc)
+    {
+        $arrOptions = [];
+
+        $objModel = \HeimrichHannot\EntityImport\EntityImportConfigModel::findByPk($dc->id);
+
+        if ($objModel === null || !$objModel->dbTargetTable)
+        {
+            return $arrOptions;
+        }
+
+        $arrFields = \Database::getInstance()->listFields($objModel->dbTargetTable);
+
+        if (!is_array($arrFields) || empty($arrFields))
+        {
+            return $arrOptions;
+        }
+
+        $arrOptions['tl_content'] = &$GLOBALS['TL_LANG']['tl_entity_import_config']['createNewContentElement'];
+
+        foreach ($arrFields as $arrField)
+        {
+            if (in_array($arrField['type'], ['index']))
+            {
+                continue;
+            }
+
+            $arrOptions[$arrField['name']] = $arrField['name'] . ' [' . $arrField['origtype'] . ']';
+        }
 
 
-	public function getTargetFields($dc)
-	{
-		$arrOptions = array();
+        return $arrOptions;
+    }
 
-		if (!$dc->activeRecord->dbTargetTable) {
-			return $arrOptions;
-		}
+    public function getTargetFileFields($dc)
+    {
+        $arrOptions = [];
 
-		$arrFields = \Database::getInstance()->listFields($dc->activeRecord->dbTargetTable);
+        $arrFields = \Database::getInstance()->listFields('tl_files');
 
-		if (!is_array($arrFields) || empty($arrFields)) {
-			return $arrOptions;
-		}
+        if (!is_array($arrFields) || empty($arrFields))
+        {
+            return $arrOptions;
+        }
 
-		$arrOptions['tl_content'] = &$GLOBALS['TL_LANG']['tl_entity_import_config']['createNewContentElement'];
+        foreach ($arrFields as $arrField)
+        {
+            if (in_array($arrField['type'], ['index']))
+            {
+                continue;
+            }
 
-		foreach ($arrFields as $arrField) {
-			if (in_array($arrField['type'], array('index'))) {
-				continue;
-			}
-
-			$arrOptions[$arrField['name']] = $arrField['name'] . ' [' . $arrField['origtype'] . ']';
-		}
-
-
-		return $arrOptions;
-	}
-
-	public function getTargetFileFields($dc)
-	{
-		$arrOptions = array();
-
-		$arrFields = \Database::getInstance()->listFields('tl_files');
-
-		if (!is_array($arrFields) || empty($arrFields)) {
-			return $arrOptions;
-		}
-
-		foreach ($arrFields as $arrField) {
-			if (in_array($arrField['type'], array('index'))) {
-				continue;
-			}
-
-			$arrOptions[$arrField['name']] = $arrField['name'] . ' [' . $arrField['origtype'] . ']';
-		}
+            $arrOptions[$arrField['name']] = $arrField['name'] . ' [' . $arrField['origtype'] . ']';
+        }
 
 
-		return $arrOptions;
-	}
+        return $arrOptions;
+    }
 
-	public function getSourceTables(\DataContainer $dc)
-	{
-		$arrTables = \HeimrichHannot\EntityImport\Database::getInstance(
-			\HeimrichHannot\EntityImport\EntityImportModel::findByPk($dc->activeRecord->pid)->row()
-		)->listTables();
+    public function getSourceTables(\DataContainer $dc)
+    {
+        $arrTables = \HeimrichHannot\EntityImport\Database::getInstance(
+            \HeimrichHannot\EntityImport\EntityImportModel::findByPk($dc->activeRecord->pid)->row()
+        )->listTables();
 
-		return array_values($arrTables);
-	}
+        return array_values($arrTables);
+    }
 
-	public function getTargetTables(\DataContainer $dc)
-	{
-		$arrTables = \HeimrichHannot\EntityImport\Database::getInstance()->listTables();
+    public function getTargetTables(\DataContainer $dc)
+    {
+        $arrTables = \HeimrichHannot\EntityImport\Database::getInstance()->listTables();
 
-		return array_values($arrTables);
-	}
+        return array_values($arrTables);
+    }
 
-	public function getContaoCategories(DataContainer $dc)
-	{
-		$arrOptions = array();
+    public function getContaoCategories(DataContainer $dc)
+    {
+        $arrOptions = [];
 
-		if (!in_array('news_categories', \Config::getInstance()->getActiveModules())) {
-			return $arrOptions;
-		}
+        if (!in_array('news_categories', \Config::getInstance()->getActiveModules()))
+        {
+            return $arrOptions;
+        }
 
-		$objCategories = \NewsCategories\NewsCategoryModel::findBy('published', 1);
+        $objCategories = \NewsCategories\NewsCategoryModel::findBy('published', 1);
 
-		if ($objCategories === null) {
-			return $arrOptions;
-		}
+        if ($objCategories === null)
+        {
+            return $arrOptions;
+        }
 
-		while ($objCategories->next()) {
-			$arrOptions[$objCategories->id] = $objCategories->title;
-		}
+        while ($objCategories->next())
+        {
+            $arrOptions[$objCategories->id] = $objCategories->title;
+        }
 
-		return $arrOptions;
-	}
+        return $arrOptions;
+    }
 
-	public function getTypoCategories(DataContainer $dc)
-	{
-		$arrOptions = array();
+    public function getTypoCategories(DataContainer $dc)
+    {
+        $arrOptions = [];
 
-		if (!in_array('news_categories', \Config::getInstance()->getActiveModules())) {
-			return $arrOptions;
-		}
+        if (!in_array('news_categories', \Config::getInstance()->getActiveModules()))
+        {
+            return $arrOptions;
+        }
 
-		$objCategories =
-			\HeimrichHannot\Typort\Database::getInstance()->prepare('SELECT * FROM tt_news_cat WHERE deleted = 0 AND hidden=0')->execute();
+        $objCategories = \HeimrichHannot\EntityImport\Database::getInstance()->prepare('SELECT * FROM tt_news_cat WHERE deleted = 0 AND hidden=0')->execute();
 
-		if ($objCategories->count() < 1) {
-			return $arrOptions;
-		}
+        if ($objCategories->count() < 1)
+        {
+            return $arrOptions;
+        }
 
-		while ($objCategories->next()) {
-			$arrOptions[$objCategories->uid] = $objCategories->title;
-		}
+        while ($objCategories->next())
+        {
+            $arrOptions[$objCategories->uid] = $objCategories->title;
+        }
 
-		return $arrOptions;
-	}
+        return $arrOptions;
+    }
 
-	public function getPidsFromTable(DataContainer $dc)
-	{
-		$arrArchives = array();
+    public function getPidsFromTable(DataContainer $dc)
+    {
+        $arrArchives = [];
 
-		$objArchives = \HeimrichHannot\Typort\Database::getInstance()->prepare(
-			'SELECT p.title, p.uid, COUNT(n.uid) AS total FROM ' . $dc->activeRecord->type . ' n
+        $objArchives = \HeimrichHannot\Typort\Database::getInstance()->prepare(
+            'SELECT p.title, p.uid, COUNT(n.uid) AS total FROM ' . $dc->activeRecord->type . ' n
 			INNER JOIN pages p ON p.uid = n.pid
 			WHERE n.deleted=0 AND p.deleted = 0 GROUP BY n.pid ORDER BY n.pid'
-		)
-			->execute();
+        )->execute();
 
-		if ($objArchives === null) {
-			return $arrArchives;
-		}
+        if ($objArchives === null)
+        {
+            return $arrArchives;
+        }
 
-		while ($objArchives->next()) {
-			$arrArchives[$objArchives->uid] = $objArchives->title . ' [Id: ' . $objArchives->uid . '] (Count:' . $objArchives->total . ')';
-		}
+        while ($objArchives->next())
+        {
+            $arrArchives[$objArchives->uid] = $objArchives->title . ' [Id: ' . $objArchives->uid . '] (Count:' . $objArchives->total . ')';
+        }
 
-		return $arrArchives;
-	}
+        return $arrArchives;
+    }
 
+    public function listEntityImportConfig($arrRow)
+    {
+        $strText = $arrRow['description'] ? '<span style="color:#b3b3b3;padding-left:3px"> [' . $arrRow['description'] . '] </span>' : '';
 
-	public function listEntityImportConfig($arrRow)
-	{
-		$strText = $arrRow['description'] ? '<span style="color:#b3b3b3;padding-left:3px"> [' . $arrRow['description'] . '] </span>' : '';
-
-		return '<div class="tl_content_left">' . $arrRow['title'] . $strText . '</div>';
-	}
-
-	public static function getImporterClasses()
-	{
-		$arrOptions = array();
-
-		foreach (array_keys(\Contao\ClassLoader::getClasses()) as $strName) {
-			if (strpos($strName, 'HeimrichHannot\\EntityImport\\') !== false
-				&& ($strName == 'HeimrichHannot\EntityImport\Importer'
-					|| in_array(
-						'HeimrichHannot\EntityImport\Importer',
-						\HeimrichHannot\HastePlus\Classes::getParentClasses($strName)
-					))
-			) {
-				$arrOptions[$strName] = $strName;
-			}
-		}
-
-		sort($arrOptions);
-
-		return $arrOptions;
-	}
+        return '<div class="tl_content_left">' . $arrRow['title'] . $strText . '</div>';
+    }
 
 }

@@ -1,0 +1,8 @@
+.isContao4 .multi-column-editor input[type="text"] {
+  padding: 5px 6px 6px !important; }
+.isContao4:not(.lw) .multi-column-editor .form-group {
+  width: 18% !important; }
+  .isContao4:not(.lw) .multi-column-editor .form-group > * {
+    width: 100% !important; }
+
+/*# sourceMappingURL=entity_import.css.map */
