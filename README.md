@@ -16,3 +16,16 @@ A backend only module, to migrate items from one database into another (experts 
 - The palettes of an entity import configuration can be modified by the Hook "initEntityImportPalettes"; one is already set
   and could be easily removed if necessary
   
+## Usage
+
+### Fieldmapping
+
+#### Types
+|Type      |Description|
+|----------|-----------|
+|source    |Copy of the source value|
+|foreignKey|           |
+|value     |Result of entry in value row|
+|sql       |           |
+
+  
