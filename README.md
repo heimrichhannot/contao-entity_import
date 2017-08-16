@@ -7,7 +7,7 @@ A backend only module, to migrate items from one database into another (experts 
 - image support
 - enclosure support
 - tidy text replace (format to fit contao tinymce setting)
-- foreignKey reference for values (Set for example in value field : "id=tl_videobox.youtube_id" (id = foreign primary key, tl_videobox = foreign key table, youtube_id = column value that should return)
+- foreignKey reference for values
 
 ## Configuration
 
@@ -24,8 +24,15 @@ A backend only module, to migrate items from one database into another (experts 
 |Type      |Description|
 |----------|-----------|
 |source    |Copy of the source value|
-|foreignKey|           |
+|foreignKey|foreignKey reference for values (Set for example in value field : `id=tl_videobox.youtube_id` (id = foreign primary key, tl_videobox = foreign key table, youtube_id = column value that should return)           |
 |value     |Result of entry in value row|
 |sql       |           |
 
-  
+## Developers 
+
+### Hooks
+
+Name | Arguments | Expected return value | Description
+---- | --------- | --------------------- | -----------
+entityImportRunAfterSaving | $objItem, $objSourceItem, $this | $objItem | Triggered after saving entity
+initEntityImportPalettes | $objEntityImportConfig, $arrDca | - | Modify the palettes of an entity import configuration
