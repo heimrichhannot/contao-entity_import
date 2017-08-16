@@ -87,7 +87,9 @@ class Importer extends \Backend
 
     protected function purgeBeforeImport($objModel)
     {
-        $strQuery = 'DELETE FROM ' . $objModel->dbTargetTable . ($objModel->whereClausePurge ? ' WHERE ' . $objModel->whereClausePurge : '');
+        $whereClausePurge = $objModel->whereClausePurge;
+
+        $strQuery = 'DELETE FROM ' . $objModel->dbTargetTable . ($whereClausePurge ? ' WHERE ' . html_entity_decode($whereClausePurge) : '');
 
         \Database::getInstance()->execute($strQuery);
 
@@ -160,7 +162,7 @@ class Importer extends \Backend
 
                         foreach ($arrSourceFields as $key => $field)
                         {
-                            $arrTokens[$field['name']] = $field['name'];
+                            $arrTokens[$field['name']] = $this->dbSourceTable . '.' . $field['name'];
                         }
 
                         $value = \StringUtil::parseSimpleTokens($value, $arrTokens);
@@ -324,8 +326,7 @@ class Importer extends \Backend
 
             $strDateCol = $this->arrMapping['date'];
             $strQuery   .= html_entity_decode(
-                ($this->whereClause ? " AND " : " WHERE ")
-                . "(($strDateCol>=$intStart AND $strDateCol<=$intEnd) OR ($strDateCol>=$intStart AND $strDateCol<=$intEnd) OR ($strDateCol<=$intStart AND $strDateCol>=$intEnd))"
+                ($this->whereClause ? " AND " : " WHERE ") . "(($strDateCol>=$intStart AND $strDateCol<$intEnd))"
             );
         }
 
@@ -391,7 +392,15 @@ class Importer extends \Backend
 
         foreach ($this->arrMapping as $key => $col)
         {
-            $value = $this->setValueByType($objSourceItem->{$key}, $dca['fields'][$key], $objItem, $objSourceItem);
+            if (strpos($col, '[[SQL::') !== false)
+            {
+                $value = $objSourceItem->{$key};
+            }
+            else
+            {
+                $value = $this->setValueByType($objSourceItem->{$key}, $dca['fields'][$key], $objItem, $objSourceItem);
+            }
+
             $this->setObjectValueFromMapping($objItem, $value, $key);
 
             if ($value === null)
@@ -413,7 +422,6 @@ class Importer extends \Backend
         if (!$this->dryRun)
         {
             $this->runAfterSaving($objItem, $objSourceItem);
-
 
             // HOOK: run after saving callback
             if (isset($GLOBALS['TL_HOOKS']['entityImportRunAfterSaving']) && is_array($GLOBALS['TL_HOOKS']['entityImportRunAfterSaving']))
@@ -711,10 +719,10 @@ class Importer extends \Backend
             $objModel->delete();
         }
 
+        $strDestination = $objTargetDir->path . '/' . $objFile->name;
 
-        $objFile->copyTo($objTargetDir->path . '/' . $objFile->name);
-
-        $objModel = $objFile->getModel();
+        $objFile->copyTo($strDestination);
+        $objModel = \FilesModel::findByPath($strDestination);
 
         return $objModel;
     }

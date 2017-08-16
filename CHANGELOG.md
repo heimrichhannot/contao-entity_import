@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.4] - 2017-08-16
+
+### Fixed
+- `sql` type handling
+- `Importer::copyFile` now returns the target model
+
 ## [1.2.3] - 2017-07-27
 
 ### Fixed
