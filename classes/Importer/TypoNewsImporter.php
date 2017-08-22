@@ -35,7 +35,19 @@ class TypoNewsImporter extends NewsImporter
             $this->importWriter($objItem, $objSourceItem);
         }
 
+        if($objItem->starttime != '' || $objItem->endtime != '')
+        {
+            $this->setPublished($objItem, $objSourceItem);
+        }
+
         $objItem->save();
+    }
+
+    protected function setPublished($objItem, $objSourceItem)
+    {
+        $objItem->start = $objItem->start == 0 || $objItem->start == '' ? '' : $objItem->start;
+        $objItem->stop = $objItem->stop == 0 || $objItem->stop == '' ? '' : $objItem->stop;
+
     }
 
     protected function setTags($objItem, $objSourceItem)
