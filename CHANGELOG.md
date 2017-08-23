@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.6] - 2017-08-23
+
+### Fixed
+- `starttime`, `endtime` conversion from Typo3 to Contao `start`, `stop`
+
 ## [1.2.5] - 2017-08-22
 
 ### Added

@@ -35,7 +35,7 @@ class TypoNewsImporter extends NewsImporter
             $this->importWriter($objItem, $objSourceItem);
         }
 
-        if($objItem->starttime != '' || $objItem->endtime != '')
+        if($objItem->start != '' || $objItem->start != '')
         {
             $this->setPublished($objItem, $objSourceItem);
         }
@@ -45,8 +45,8 @@ class TypoNewsImporter extends NewsImporter
 
     protected function setPublished($objItem, $objSourceItem)
     {
-        $objItem->start = $objItem->start == 0 || $objItem->start == '' ? '' : $objItem->start;
-        $objItem->stop = $objItem->stop == 0 || $objItem->stop == '' ? '' : $objItem->stop;
+        $objItem->start = !$objItem->start ? '' : $objItem->start;
+        $objItem->stop = !$objItem->stop ? '' : $objItem->stop;
 
     }
 
