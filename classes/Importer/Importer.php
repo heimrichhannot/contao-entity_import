@@ -50,6 +50,8 @@ class Importer extends \Backend
 
         parent::__construct();
 
+        ini_set('max_execution_time', 0);
+
         if (!isset($GLOBALS['loadDataContainer'][$this->objModel->dbTargetTable]))
         {
             \Controller::loadDataContainer($this->objModel->dbTargetTable);

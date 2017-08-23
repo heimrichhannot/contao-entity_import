@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.7] - 2017-08-23
+
+## Changed
+- try to set `max_execution_time` to 0
+
 ## [1.2.6] - 2017-08-23
 
 ### Fixed
