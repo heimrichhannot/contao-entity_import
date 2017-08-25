@@ -105,6 +105,7 @@ class Importer extends \Backend
             return;
         }
 
+        $idsToRemove = [];
         while ($result->next())
         {
             $idsToRemove[] = $result->id;
@@ -112,7 +113,7 @@ class Importer extends \Backend
 
         $tables = unserialize($objModel->additionalTablesToPurge);
 
-        if (!empty($tables))
+        if (!empty($tables) && !empty($idsToRemove))
         {
             foreach ($tables as $table)
             {

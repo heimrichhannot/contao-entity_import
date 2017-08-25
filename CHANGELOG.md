@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 ## [1.2.8] - 2017-08-25
 
+### Fixed
+- added if statement
+
+## [1.2.8] - 2017-08-25
+
 ### Added
 - deletes entries in given table by reference column
 
