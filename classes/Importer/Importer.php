@@ -87,9 +87,51 @@ class Importer extends \Backend
         $this->arrNamedMapping = $arrNamedMapping;
     }
 
+    /**
+     * deletes entries in given table by given reference column
+     *
+     * @param $objModel
+     */
+    protected function purgeAdditionalTablesBeforeImport($objModel)
+    {
+        $whereClausePurge = $objModel->whereClausePurge;
+
+        $strQuery = 'SELECT id FROM ' . $objModel->dbTargetTable . ($whereClausePurge ? ' WHERE ' . html_entity_decode($whereClausePurge) : '');
+
+        $result = \Database::getInstance()->execute($strQuery);
+
+        if (!$result->next())
+        {
+            return;
+        }
+
+        while ($result->next())
+        {
+            $idsToRemove[] = $result->id;
+        }
+
+        $tables = unserialize($objModel->additionalTablesToPurge);
+
+        if (!empty($tables))
+        {
+            foreach ($tables as $table)
+            {
+                \Database::getInstance()
+                    ->prepare('DELETE FROM ' . $table['tableToPurge'] . ' WHERE ' . $table['referenceColumn'] . ' IN (' . implode(', ', $idsToRemove) . ')')
+                    ->execute();
+            }
+        }
+    }
+
     protected function purgeBeforeImport($objModel)
     {
         $whereClausePurge = $objModel->whereClausePurge;
+
+        if ($objModel->purgeAdditionalTables)
+        {
+            $this->purgeAdditionalTablesBeforeImport($objModel);
+        }
+
 
         $strQuery = 'DELETE FROM ' . $objModel->dbTargetTable . ($whereClausePurge ? ' WHERE ' . html_entity_decode($whereClausePurge) : '');
 
