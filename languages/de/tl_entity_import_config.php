@@ -48,7 +48,8 @@ $arrLang['dbFieldMapping']['source']             = ['Quellfeld', 'Wählen Sie hi
 $arrLang['dbFieldMapping']['value']              =
     ['Wert / Fremdschlüssel', 'Geben Sie hier nur dann einen Wert oder Fremdschlüssel-Feld ein, wenn Sie als Typ \'Wert\' oder \'Fremdschlüssel\' gewählt haben.'];
 $arrLang['dbFieldMapping']['target']             = ['Zielfeld', 'Wählen Sie hier das Feld in der Zieltabelle aus, in das importiert werden soll.'];
-$arrLang['dbFieldMapping']['transform']          = ['Wert Transformieren', 'Wert vor setzen transformieren (Verwenden Sie ##value## innerhalb von Inserttags {{trimsplit::,::##value##}}'];
+$arrLang['dbFieldMapping']['transform']          =
+    ['Wert Transformieren', 'Wert vor setzen transformieren (Verwenden Sie ##value## innerhalb von Inserttags {{trimsplit::,::##value##}}'];
 $arrLang['useTimeInterval']                      = ['Zeitraum angeben', 'Geben Sie einen Zeitraum an.'];
 $arrLang['start']                                = ['Startzeit', 'Wählen Sie hier die Startzeit eines temporalen Filters aus.'];
 $arrLang['end']                                  = ['Endzeit', 'Wählen Sie hier die Endzeit eines temporalen Filters aus.'];
@@ -75,7 +76,10 @@ $arrLang['fileFieldMapping']['value']            = ['Wert', 'Geben Sie hier nur 
 $arrLang['fileFieldMapping']['target']           = ['Zielfeld', 'Wählen Sie hier das Feld in der Zieltabelle aus, in das importiert werden soll.'];
 $arrLang['fileFieldMapping']['transformToArray'] =
     ['Zu Array<br>transformieren', 'Wählen Sie diese Option, um Werte wie \'1;4;5\' zu einem serialisierten Array zu transformieren.'];
-
+$arrLang['purgeAdditionalTables']                =
+    ['Datensätze in zusätzlichen Tabellen vor dem Import löschen', 'Wählen Sie diese Option, wenn in zusätzlichen Tabellen vor jedem Import Datensätze gelöscht werden sollen.'];
+$arrLang['additionalTablesToPurge']              = ['Zusätzliche Tabellen'];
+$arrLang['tableToPurge']                         = ['Zusätzliche Tabelle auswählen'];
 /**
  * Legends
  */
