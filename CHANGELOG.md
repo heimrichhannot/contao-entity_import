@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 ## [1.2.11] - 2017-08-28
 
 ## Changed
+- TypoNewsImporter, import article image title also as caption
+
+## [1.2.11] - 2017-08-28
+
+## Changed
 - wrap news teaser inside paragraphs
 
 ## [1.2.10] - 2017-08-25
