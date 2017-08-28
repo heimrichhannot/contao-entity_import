@@ -34,14 +34,18 @@ class NewsImporter extends Importer
         $this->createEnclosures($objItem);
 
         // news_categories module support
-        if (in_array('news_categories', \ModuleLoader::getActive()))
-        {
+        if (in_array('news_categories', \ModuleLoader::getActive())) {
             $this->setCategories($objItem, $objSourceItem);
         }
 
-	// wrap teaser inside paragraph
+        // wrap teaser inside paragraph
         if (preg_match('/^<p/', $objItem->teaser) === 0) {
             $objItem->teaser = "<p>" . $objItem->teaser . "</p>";
+        }
+
+        // wrap short teaser inside paragraph
+        if ($objItem->teaser_short && preg_match('/^<p/', $objItem->teaser_short) === 0) {
+            $objItem->teaser_short = "<p>" . $objItem->teaser_short . "</p>";
         }
 
         $objItem->save();
@@ -56,8 +60,7 @@ class NewsImporter extends Importer
         $objAlias = \Database::getInstance()->prepare("SELECT id FROM $t WHERE alias=? AND id != ?")->execute($varValue, $objItem->id);
 
         // Add ID to alias
-        if ($objAlias->numRows > 0)
-        {
+        if ($objAlias->numRows > 0) {
             $varValue .= '-' . $objItem->id;
         }
 
@@ -66,8 +69,7 @@ class NewsImporter extends Importer
 
     protected function createContentElements(&$objItem)
     {
-        if ($objItem->tl_content)
-        {
+        if ($objItem->tl_content) {
             // need to wrap <p> around text for contao
             $tidyConfig = [
                 'enclose-text'                => true,
@@ -128,10 +130,8 @@ class NewsImporter extends Importer
 
         $paragraphs = '';
 
-        foreach (explode("\n", $string) as $line)
-        {
-            if (trim($line))
-            {
+        foreach (explode("\n", $string) as $line) {
+            if (trim($line)) {
                 $paragraphs .= '<p>' . $line . '</p>';
             }
         }
@@ -144,10 +144,8 @@ class NewsImporter extends Importer
         $c = new HtmlPageCrawler($html);
 
         $c->filter('*')->each(
-            function (HtmlPageCrawler $node) use ($attribs)
-            {
-                foreach ($attribs as $attrib)
-                {
+            function (HtmlPageCrawler $node) use ($attribs) {
+                foreach ($attribs as $attrib) {
                     $node->removeAttr($attrib);
                 }
             }
@@ -158,40 +156,34 @@ class NewsImporter extends Importer
 
     protected function createEnclosures(&$objItem)
     {
-        if ($this->sourceDir === null || $this->targetDir === null)
-        {
+        if ($this->sourceDir === null || $this->targetDir === null) {
             return false;
         }
 
         $objSourceDir = \FilesModel::findByUuid($this->sourceDir);
 
-        if ($objSourceDir === null)
-        {
+        if ($objSourceDir === null) {
             return false;
         }
 
         $objTargetDir = \FilesModel::findByUuid($this->targetDir);
 
-        if ($objTargetDir === null)
-        {
+        if ($objTargetDir === null) {
             return false;
         }
 
         $arrSource = deserialize($objItem->enclosure, true);
         $arrTarget = [];
 
-        foreach ($arrSource as $strFile)
-        {
+        foreach ($arrSource as $strFile) {
 
-            if (\Validator::isUuid($strFile))
-            {
+            if (\Validator::isUuid($strFile)) {
                 continue;
             }
 
             $strRelFile = $objSourceDir->path . '/' . ltrim($strFile, '/');
 
-            if (is_dir(TL_ROOT . '/' . $strRelFile) || !file_exists(TL_ROOT . '/' . $strRelFile))
-            {
+            if (is_dir(TL_ROOT . '/' . $strRelFile) || !file_exists(TL_ROOT . '/' . $strRelFile)) {
                 continue;
             }
 
@@ -202,8 +194,7 @@ class NewsImporter extends Importer
             $arrTarget[] = $objModel->uuid;
         }
 
-        if (!empty($arrTarget))
-        {
+        if (!empty($arrTarget)) {
             $objItem->addEnclosure = true;
             $objItem->enclosure    = $arrTarget;
         }
@@ -213,8 +204,7 @@ class NewsImporter extends Importer
     {
         $arrCatContao = deserialize($this->catContao);
 
-        if (empty($arrCatContao))
-        {
+        if (empty($arrCatContao)) {
             return false;
         }
 
@@ -222,8 +212,7 @@ class NewsImporter extends Importer
 
         $arrCategories = [];
 
-        foreach ($arrCatContao as $id)
-        {
+        foreach ($arrCatContao as $id) {
             \Database::getInstance()->prepare('INSERT INTO tl_news_categories (category_id, news_id) VALUES (?,?)')->execute($id, $objItem->id);
         }
 
@@ -236,8 +225,7 @@ class NewsImporter extends Importer
     {
         $strMessage = $GLOBALS['TL_LANG']['tl_entity_import_config']['newsImport'];
 
-        if ($this->dryRun)
-        {
+        if ($this->dryRun) {
             $strMessage = $GLOBALS['TL_LANG']['tl_entity_import_config']['newsDry'];
         }
 
