@@ -203,7 +203,7 @@ class TypoNewsImporter extends NewsImporter
                 'title'   => $imageReference->title ?: '',
                 'alt'     => $imageReference->alternative ?: '',
                 'link'    => $imageReference->link ?: '',
-                'caption' => $imageReference->description ?: '',
+                'caption' => $imageReference->description ?: ($imageReference->title ?: ''),
             ];
 
             $objModel->meta = $arrMeta;
