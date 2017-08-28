@@ -1,7 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.2.11] - 2017-08-28
+## [1.2.13] - 2017-08-28
+
+## Fixed
+- updated to multi_column_editor 1.2.0, removed too globally defined styles
+
+## [1.2.12] - 2017-08-28
 
 ## Changed
 - TypoNewsImporter, import article image title also as caption

@@ -121,7 +121,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = [
             'search'           => true,
             'exclude'          => true,
             'inputType'        => 'select',
-            'eval'             => ['mandatory' => true, 'submitOnChange' => true, 'tl_class' => 'w50'],
+            'eval'             => ['mandatory' => true, 'submitOnChange' => true, 'tl_class' => 'w50', 'chosen' => true],
             'options_callback' => ['tl_entity_import_config', 'getSourceTables'],
             'sql'              => "varchar(255) NOT NULL default ''",
         ],
@@ -130,14 +130,14 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = [
             'search'           => true,
             'exclude'          => true,
             'inputType'        => 'select',
-            'eval'             => ['mandatory' => true, 'submitOnChange' => true, 'tl_class' => 'w50'],
+            'eval'             => ['mandatory' => true, 'submitOnChange' => true, 'tl_class' => 'w50', 'chosen' => true],
             'options_callback' => ['tl_entity_import_config', 'getTargetTables'],
             'sql'              => "varchar(255) NOT NULL default ''",
         ],
         'importerClass'           => [
             'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['importerClass'],
             'inputType'        => 'select',
-            'eval'             => ['mandatory' => true, 'tl_class' => 'w50 clr', 'decodeEntities' => true, 'submitOnChange' => true],
+            'eval'             => ['mandatory' => true, 'tl_class' => 'w50 clr', 'decodeEntities' => true, 'submitOnChange' => true, 'chosen' => true],
             'options_callback' => ['tl_entity_import_config', 'getImporterClasses'],
             'sql'              => "varchar(255) NOT NULL default ''",
         ],
@@ -182,7 +182,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = [
                             'search'           => true,
                             'exclude'          => true,
                             'inputType'        => 'select',
-                            'eval'             => ['mandatory' => true, 'submitOnChange' => true, 'tl_class' => 'w50'],
+                            'eval'             => ['mandatory' => true, 'submitOnChange' => true, 'tl_class' => 'w50', 'groupStyle' => 'width: 180px', 'chosen' => true],
                             'options_callback' => ['tl_entity_import_config', 'getTargetTables'],
                         ],
                         'referenceColumn' => [
@@ -190,7 +190,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = [
                             'search'    => true,
                             'exclude'   => true,
                             'inputType' => 'text',
-                            'eval'      => ['mandatory' => true, 'submitOnChange' => true, 'tl_class' => 'w50'],
+                            'eval'      => ['mandatory' => true, 'submitOnChange' => true, 'tl_class' => 'w50', 'groupStyle' => 'width: 180px', 'chosen' => true],
                         ],
                     ],
                 ],
@@ -212,7 +212,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = [
                             'options'   => ['source', 'foreignKey', 'value', 'sql'],
                             'reference' => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping']['type'],
                             'eval'      => [
-                                'style' => 'width:150px',
+                                'groupStyle' => 'width:200px'
                             ],
                         ],
                         'source'    => [
@@ -220,15 +220,15 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = [
                             'inputType'        => 'select',
                             'options_callback' => ['tl_entity_import_config', 'getSourceFields'],
                             'eval'             => [
-                                'style'              => 'width:150px',
-                                'includeBlankOption' => true,
+                                'groupStyle'              => 'width:300px',
+                                'includeBlankOption' => true, 'chosen' => true
                             ],
                         ],
                         'value'     => [
                             'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping']['value'],
                             'inputType' => 'text',
                             'eval'      => [
-                                'style'          => 'width:150px',
+                                'groupStyle'          => 'width:200px',
                                 'decodeEntities' => true,
                             ],
                         ],
@@ -237,14 +237,14 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = [
                             'inputType'        => 'select',
                             'options_callback' => ['tl_entity_import_config', 'getTargetFields'],
                             'eval'             => [
-                                'style' => 'width:150px',
+                                'groupStyle' => 'width:300px', 'chosen' => true
                             ],
                         ],
                         'transform' => [
                             'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping']['transform'],
                             'inputType' => 'text',
                             'eval'      => [
-                                'style'          => 'width:150px',
+                                'groupStyle'          => 'width:200px',
                                 'decodeEntities' => true,
                             ],
                         ],
@@ -430,7 +430,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = [
                             'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['fileFieldMapping']['source'],
                             'inputType' => 'text',
                             'eval'      => [
-                                'style' => 'width:150px',
+                                'groupStyle' => 'width:150px',
                                 'rgxp'  => 'digit',
                             ],
                         ],
@@ -438,7 +438,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = [
                             'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['fileFieldMapping']['value'],
                             'inputType' => 'text',
                             'eval'      => [
-                                'style' => 'width:150px',
+                                'groupStyle' => 'width:150px',
                             ],
                         ],
                         'target'           => [
@@ -446,7 +446,8 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = [
                             'inputType'        => 'select',
                             'options_callback' => ['tl_entity_import_config', 'getTargetFields'],
                             'eval'             => [
-                                'style' => 'width:150px',
+                                'groupStyle' => 'width:150px',
+                                'chosen' => true
                             ],
                         ],
                         'transformToArray' => [
@@ -454,7 +455,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = [
                             'exclude'   => true,
                             'inputType' => 'checkbox',
                             'eval'      => [
-                                'style' => 'width:50px',
+                                'groupStyle' => 'width:50px',
                             ],
                         ],
                     ],
