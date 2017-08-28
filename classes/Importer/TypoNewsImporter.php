@@ -20,23 +20,19 @@ class TypoNewsImporter extends NewsImporter
     {
         parent::runAfterSaving($objItem, $objSourceItem);
 
-        if ($objItem->tags)
-        {
+        if ($objItem->tags) {
             $this->setTags($objItem, $objSourceItem);
         }
 
-        if ($objItem->addImage)
-        {
+        if ($objItem->addImage) {
             $this->importArticleImage($objItem, $objSourceItem);
         }
 
-        if ($objItem->writers)
-        {
+        if ($objItem->writers) {
             $this->importWriter($objItem, $objSourceItem);
         }
 
-        if($objItem->start != '' || $objItem->start != '')
-        {
+        if ($objItem->start != '' || $objItem->start != '') {
             $this->setPublished($objItem, $objSourceItem);
         }
 
@@ -46,7 +42,7 @@ class TypoNewsImporter extends NewsImporter
     protected function setPublished($objItem, $objSourceItem)
     {
         $objItem->start = !$objItem->start ? '' : $objItem->start;
-        $objItem->stop = !$objItem->stop ? '' : $objItem->stop;
+        $objItem->stop  = !$objItem->stop ? '' : $objItem->stop;
 
     }
 
@@ -56,8 +52,7 @@ class TypoNewsImporter extends NewsImporter
             $objSourceItem->uid
         );
 
-        if (!$tags->numRows)
-        {
+        if (!$tags->numRows) {
             $objItem->tags = null;
 
             return;
@@ -68,8 +63,7 @@ class TypoNewsImporter extends NewsImporter
         // always cleanup before
         \Database::getInstance()->prepare('DELETE FROM tl_news_tags WHERE news_id = ?')->execute($objItem->id);
 
-        while ($tags->next())
-        {
+        while ($tags->next()) {
             $arrTags[] = $tags->uid_foreign;
             \Database::getInstance()->prepare('INSERT INTO tl_news_tags (cfg_tag_id, news_id) VALUES (?,?)')->execute($tags->uid_foreign, $objItem->id);
         }
@@ -81,8 +75,7 @@ class TypoNewsImporter extends NewsImporter
     {
         $contaoCategories = deserialize($this->catContao);
 
-        if (empty($contaoCategories))
-        {
+        if (empty($contaoCategories)) {
             return false;
         }
 
@@ -91,8 +84,7 @@ class TypoNewsImporter extends NewsImporter
             $objSourceItem->uid
         );
 
-        if (!$categories->numRows)
-        {
+        if (!$categories->numRows) {
             $objItem->categories = null;
 
             return false;
@@ -104,11 +96,9 @@ class TypoNewsImporter extends NewsImporter
         // always cleanup before
         \Database::getInstance()->prepare('DELETE FROM tl_news_categories WHERE news_id = ?')->execute($objItem->id);
 
-        while ($categories->next())
-        {
+        while ($categories->next()) {
             // category ids from typo3 must match category ids from contao
-            if (!in_array($categories->uid_local, $contaoCategories))
-            {
+            if (!in_array($categories->uid_local, $contaoCategories)) {
                 continue;
             }
 
@@ -122,27 +112,21 @@ class TypoNewsImporter extends NewsImporter
 
     protected function importWriter($objItem, $objSourceItem)
     {
-        if (($objGroup = \MemberGroupModel::findByName(ENTITY_IMPORT_NEWS_WRITERS_MEMBER_GROUP_NAME)) === null)
-        {
+        if (($objGroup = \MemberGroupModel::findByName(ENTITY_IMPORT_NEWS_WRITERS_MEMBER_GROUP_NAME)) === null) {
             $objGroup         = Model::setDefaultsFromDca(new \MemberGroupModel());
             $objGroup->tstamp = time();
             $objGroup->name   = ENTITY_IMPORT_NEWS_WRITERS_MEMBER_GROUP_NAME;
             $objGroup->save();
         }
 
-        if ($objSourceItem->author_email == '' || ($objModel = \MemberModel::findByEmail($objSourceItem->author_email)) === null)
-        {
-            if (($objModel = \MemberModel::findByLastname($objItem->writers)) !== null)
-            {
+        if ($objSourceItem->author_email == '' || ($objModel = \MemberModel::findByEmail($objSourceItem->author_email)) === null) {
+            if (($objModel = \MemberModel::findByLastname($objItem->writers)) !== null) {
                 $groups = deserialize($objModel->groups, true);
 
-                if (!in_array($objGroup->id, $groups))
-                {
+                if (!in_array($objGroup->id, $groups)) {
                     $objModel = Model::setDefaultsFromDca(new \MemberModel());
                 }
-            }
-            else
-            {
+            } else {
                 $objModel = Model::setDefaultsFromDca(new \MemberModel());
             }
         }
@@ -168,8 +152,7 @@ class TypoNewsImporter extends NewsImporter
             'article_image'
         );
 
-        if (!$imageReference->numRows)
-        {
+        if (!$imageReference->numRows) {
             $objItem->addImage = '';
 
             return;
@@ -179,8 +162,7 @@ class TypoNewsImporter extends NewsImporter
 
         $file = $this->Database->prepare("SELECT * FROM sys_file WHERE uid = ?")->execute($imageReference->uid_local);
 
-        if (!$file->numRows)
-        {
+        if (!$file->numRows) {
             $objItem->addImage = '';
 
             return;
@@ -188,8 +170,7 @@ class TypoNewsImporter extends NewsImporter
 
         $objModel = $this->copyFile($file->identifier);
 
-        if (!$objModel instanceof \FilesModel)
-        {
+        if (!$objModel instanceof \FilesModel) {
             $objItem->addImage = '';
 
             return;
@@ -197,8 +178,7 @@ class TypoNewsImporter extends NewsImporter
 
         $objModel->copyright = [$imageReference->title];
 
-        if ($imageReference->title || $imageReference->alternative || $imageReference->link || $imageReference->description)
-        {
+        if ($imageReference->title || $imageReference->alternative || $imageReference->link || $imageReference->description) {
             $arrMeta['de'] = [
                 'title'   => $imageReference->title ?: '',
                 'alt'     => $imageReference->alternative ?: '',
@@ -213,5 +193,45 @@ class TypoNewsImporter extends NewsImporter
         $objItem->singleSRC = $objModel->uuid;
 
         $objModel->save();
+    }
+
+    /**
+     * Prepare typo3 html for contao
+     * @param string $html
+     * @return string The adjusted html
+     */
+    protected function prepareHtml($html)
+    {
+        $html = $this->convert_external_link_tags($html);
+        return $html;
+    }
+
+    /**
+     * Convert external typo 3 <link> tags to anchors <a>
+     * @param $html
+     * @return mixed
+     */
+    public function convert_external_link_tags($html)
+    {
+        $pattern     = '/<link\s(.+)\s-\s(.*)?\s(".*")?>(.+)<\/link>/U';
+        $replacement = '<a href="$1" target="$2">$4</a>';
+        $html        = preg_replace($pattern, $replacement, $html);
+
+        $html = str_replace(' target="external-link"', ' target="_blank"', $html);
+        $html = str_replace(' target="-"', '', $html);
+        return $html;
+    }
+
+    /**
+     * Convert internal typo 3 <link> tags to anchors <a>
+     * @param $html
+     * @return mixed
+     */
+    public function convert_internal_link_tags($html)
+    {
+        $pattern     = '/<link\s([0-9]+)>(.+)<\/link>/U';
+        $replacement = '<a href="http://www.nnu.edu/index.php?id=$1">$2</a>';
+        preg_match_all($pattern, $html, $matches, PREG_PATTERN_ORDER);
+        return preg_replace($pattern, $replacement, $html);
     }
 }

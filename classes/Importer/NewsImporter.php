@@ -6,24 +6,6 @@ use Wa72\HtmlPageDom\HtmlPageCrawler;
 
 class NewsImporter extends Importer
 {
-    public function convert_external_link_tags($html)
-    {
-        $pattern     = '!<link\s(.+)\s_blank external-link-new-window\s(".*")?><img(.+) \/>(.+)<\/link>!U';
-        $replacement = '<a href="$1" target="_blank" title=$2>$4</a>';
-        preg_match_all($pattern, $html, $matches, PREG_PATTERN_ORDER);
-
-        return preg_replace($pattern, $replacement, $html);
-    }
-
-    public function convert_internal_link_tags($html)
-    {
-        $pattern     = '!<link\s(\d+)\s-\sinternal-link\s(".*")?>((https?://|www\.)+[a-z0-9_./?=&-]+)<\/link>!U';
-        $replacement = '<a href="http://$3" title=$2>$3</a>';
-        preg_match_all($pattern, $html, $matches, PREG_PATTERN_ORDER);
-
-        return preg_replace($pattern, $replacement, $html);
-    }
-
     protected function runAfterSaving(&$objItem, $objSourceItem)
     {
         $objItem->alias    = $this->generateAlias($objItem->alias ? $objItem->alias : $objItem->headline, $objItem);
@@ -83,8 +65,8 @@ class NewsImporter extends Importer
 
             $bodyText = '<!DOCTYPE html><head><title></title></head><body>' . $objItem->tl_content . '</body></html>';
 
-//			$bodyText = $this->convert_external_link_tags($bodyText);
-//			$bodyText = $this->convert_internal_link_tags($bodyText);
+            $bodyText = $this->prepareHtml($bodyText);
+
             $bodyText = $this->nl2p($bodyText);
 
             $tidy = new \tidy();
@@ -115,6 +97,8 @@ class NewsImporter extends Importer
 
             $objContent->text = $this->stripAttributes($objContent->text, ['style', 'class', 'id']);
 
+            $this->adjustContentElement($objContent);
+
             $objContent->ptable  = $this->dbTargetTable;
             $objContent->pid     = $objItem->id;
             $objContent->sorting = 16;
@@ -122,6 +106,16 @@ class NewsImporter extends Importer
             $objContent->type    = 'text';
             $objContent->save();
         }
+    }
+
+    /**
+     * Prepare typo3 html for contao
+     * @param string $html
+     * @return string The adjusted html
+     */
+    protected function prepareHtml($html)
+    {
+        return $html;
     }
 
     public function nl2p($string)
