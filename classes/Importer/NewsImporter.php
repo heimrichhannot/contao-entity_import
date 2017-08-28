@@ -39,7 +39,10 @@ class NewsImporter extends Importer
             $this->setCategories($objItem, $objSourceItem);
         }
 
-//		$objItem->teaser = "<p>" . strip_tags($objItem->teaser) . "</p>";
+	// wrap teaser inside paragraph
+        if (preg_match('/^<p/', $objItem->teaser) === 0) {
+            $objItem->teaser = "<p>" . $objItem->teaser . "</p>";
+        }
 
         $objItem->save();
     }

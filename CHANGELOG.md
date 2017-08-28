@@ -1,10 +1,20 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.2.8] - 2017-08-25
+## [1.2.11] - 2017-08-28
+
+## Changed
+- wrap news teaser inside paragraphs
+
+## [1.2.10] - 2017-08-25
 
 ### Fixed
 - added if statement
+
+## [1.2.9] - 2017-08-25
+
+### Added
+- translations
 
 ## [1.2.8] - 2017-08-25
 
