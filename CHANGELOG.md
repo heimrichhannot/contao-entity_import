@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.16] - 2017-08-29
+
+## Fixed
+- clean html properly within NewsImporter
+
 ## [1.2.15] - 2017-08-29
 
 ## Fixed

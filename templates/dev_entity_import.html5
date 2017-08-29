@@ -9,7 +9,7 @@
         <div class="tl_formbody_edit">
             <input type="hidden" name="FORM_SUBMIT" value="tl_entity_import">
             <input type="hidden" name="REQUEST_TOKEN" value="<?php echo REQUEST_TOKEN; ?>">
-            <div class="tl_tbox">
+            <div class="tl_tbox widget">
                 <h3><?php echo $this->label; ?></h3>
                 <p style="line-height:16px; padding-top:6px;"><?php echo $this->explain; ?></p>
             </div>

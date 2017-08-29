@@ -198,9 +198,10 @@ class TypoNewsImporter extends NewsImporter
     /**
      * Prepare typo3 html for contao
      * @param string $html
+     * @param \Model $objItem The current contao model
      * @return string The adjusted html
      */
-    protected function prepareHtml($html)
+    protected function prepareHtml($html, $objItem)
     {
         $html = $this->convert_external_link_tags($html);
         return $html;

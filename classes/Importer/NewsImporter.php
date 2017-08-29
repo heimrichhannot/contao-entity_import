@@ -20,14 +20,16 @@ class NewsImporter extends Importer
             $this->setCategories($objItem, $objSourceItem);
         }
 
-        // wrap teaser inside paragraph
-        if (preg_match('/^<p/', $objItem->teaser) === 0) {
-            $objItem->teaser = "<p>" . $objItem->teaser . "</p>";
+        if ($objItem->teaser) {
+            $objItem->teaser = $this->cleanHtml($objItem->teaser, $objItem);
         }
 
-        // wrap short teaser inside paragraph
-        if ($objItem->teaser_short && preg_match('/^<p/', $objItem->teaser_short) === 0) {
-            $objItem->teaser_short = "<p>" . $objItem->teaser_short . "</p>";
+        if ($objItem->teaser_short) {
+            $objItem->teaser_short = $this->cleanHtml($objItem->teaser_short, $objItem);
+        }
+
+        if ($objItem->info_box_text_text) {
+            $objItem->info_box_text_text = $this->cleanHtml($objItem->info_box_text_text, $objItem);
         }
 
         $objItem->save();
@@ -52,51 +54,9 @@ class NewsImporter extends Importer
     protected function createContentElements(&$objItem)
     {
         if ($objItem->tl_content) {
-            // need to wrap <p> around text for contao
-            $tidyConfig = [
-                'enclose-text'                => true,
-                'drop-font-tags'              => true,
-                'drop-proprietary-attributes' => true,
-                'quote-ampersand'             => true,
-                'clean'                       => false,
-                'wrap-attributes'             => false,
-                'wrap'                        => 500,
-            ];
 
-            $bodyText = '<!DOCTYPE html><head><title></title></head><body>' . $objItem->tl_content . '</body></html>';
-
-            $bodyText = $this->prepareHtml($bodyText);
-
-            $bodyText = $this->nl2p($bodyText);
-
-            $tidy = new \tidy();
-            $tidy->parseString($bodyText, $tidyConfig, $GLOBALS['TL_CONFIG']['dbCharset']);
-            $body = $tidy->body();
-
-            $objContent       = new \ContentModel();
-            $objContent->text = urldecode($objContent->text); // decode, otherwise link and email regex wont work
-            $objContent->text = trim(str_replace(['<body>', '</body>'], '', $body));
-            $objContent->text = preg_replace("/<img[^>]+\>/i", "", $objContent->text); // strip images
-            // remove inline styles
-            $objContent->text = preg_replace('#(<[a-z ]*)(style=("|\')(.*?)("|\'))([a-z ]*>)#', '\\1\\6', $objContent->text);
-            // remove white space from empty tags
-            $objContent->text = preg_replace('#(<[a-z]*)(\s+)>#', '$1>', $objContent->text);
-            // create links from text
-            $objContent->text = preg_replace('!(\s|^)((https?://|www\.)+[a-z0-9_./?=&-]+)!i', ' <a href="http://$2" target="_blank">$2</a>', $objContent->text);
-            // replace <b> by <strong>
-            $objContent->text = preg_replace('!<b(.*?)>(.*?)</b>!i', '<strong>$2</strong>', $objContent->text);
-            // replace plain email text with inserttags
-            $objContent->text = preg_replace('/([A-Z0-9._%+-]+)@([A-Z0-9.-]+)\.([A-Z]{2,4})(\((.+?)\))?(?![^<]*>)(?![^>]*<)/i', "{{email::$1@$2.$3}}", $objContent->text);
-
-            // replace email links with inserttags
-            $objContent->text =
-                preg_replace('/<a.*href=[\'|"]mailto:([A-Z0-9._%+-]+)@([A-Z0-9.-]+)\.([A-Z]{2,4})(\((.+?)\))?[\'|"].*>(.*)<\/a>/i', "{{email::$1@$2.$3}}", $objContent->text);
-
-            // strip not allowed tags
-            $objContent->text = strip_tags($objContent->text, \Config::get('allowedTags'));
-
-            $objContent->text = $this->stripAttributes($objContent->text, ['style', 'class', 'id']);
-
+            $objContent          = new \ContentModel();
+            $objContent->text    = $this->cleanHtml($objItem->tl_content, $objItem);
             $objContent->ptable  = $this->dbTargetTable;
             $objContent->pid     = $objItem->id;
             $objContent->sorting = 16;
@@ -107,11 +67,67 @@ class NewsImporter extends Importer
     }
 
     /**
+     * Parse typo 3 html
+     * @param string $html The dirty html
+     * @param \Model $objItem The current contao model
+     * @return string $html The clean parsed html
+     */
+    protected function cleanHtml($html, $objItem)
+    {
+        // need to wrap <p> around text for contao
+        $tidyConfig = [
+            'enclose-block-text'          => true,
+            'drop-font-tags'              => true,
+            'drop-proprietary-attributes' => true,
+            'quote-ampersand'             => true,
+            'clean'                       => false,
+            'wrap-attributes'             => false,
+            'wrap'                        => 500,
+        ];
+
+        $bodyText = $this->nl2p($html);
+
+        $bodyText = '<!DOCTYPE html><head><title></title></head><body>' . $bodyText . '</body></html>';
+
+        $bodyText = $this->prepareHtml($bodyText, $objItem);
+
+        $tidy = new \tidy();
+        $tidy->parseString($bodyText, $tidyConfig, $GLOBALS['TL_CONFIG']['dbCharset']);
+        $body = $tidy->body();
+
+        $html = trim(str_replace(['<body>', '</body>'], '', $body));
+        $html = urldecode($html); // decode, otherwise link and email regex wont work
+        $html = preg_replace("/<img[^>]+\>/i", "", $html); // strip images
+        // remove inline styles
+        $html = preg_replace('#(<[a-z ]*)(style=("|\')(.*?)("|\'))([a-z ]*>)#', '\\1\\6', $html);
+        // remove white space from empty tags
+        $html = preg_replace('#(<[a-z]*)(\s+)>#', '$1>', $html);
+        // create links from text
+        $html = preg_replace('!(\s|^)((https?://|www\.)+[a-z0-9_./?=&-]+)!i', ' <a href="http://$2" target="_blank">$2</a>', $html);
+        // replace <b> by <strong>
+        $html = preg_replace('!<b(.*?)>(.*?)</b>!i', '<strong>$2</strong>', $html);
+        // replace plain email text with inserttags
+        $html = preg_replace('/([A-Z0-9._%+-]+)@([A-Z0-9.-]+)\.([A-Z]{2,4})(\((.+?)\))?(?![^<]*>)(?![^>]*<)/i', "{{email::$1@$2.$3}}", $html);
+
+        // replace email links with inserttags
+        $html =
+            preg_replace('/<a.*href=[\'|"]mailto:([A-Z0-9._%+-]+)@([A-Z0-9.-]+)\.([A-Z]{2,4})(\((.+?)\))?[\'|"].*>(.*)<\/a>/i', "{{email::$1@$2.$3}}", $html);
+
+        // strip not allowed tags
+        $html = strip_tags($html, \Config::get('allowedTags'));
+
+        $html = $this->stripAttributes($html, ['style', 'class', 'id']);
+
+        return $html;
+    }
+
+    /**
      * Prepare typo3 html for contao
      * @param string $html
+     * @param \Model $objItem The current contao model
      * @return string The adjusted html
      */
-    protected function prepareHtml($html)
+    protected function prepareHtml($html, $objItem)
     {
         return $html;
     }
