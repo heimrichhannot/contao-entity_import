@@ -97,8 +97,6 @@ class NewsImporter extends Importer
 
             $objContent->text = $this->stripAttributes($objContent->text, ['style', 'class', 'id']);
 
-            $this->adjustContentElement($objContent);
-
             $objContent->ptable  = $this->dbTargetTable;
             $objContent->pid     = $objItem->id;
             $objContent->sorting = 16;

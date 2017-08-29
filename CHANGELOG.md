@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.15] - 2017-08-29
+
+## Fixed
+- NewsImporter, removed non existing class
+
 ## [1.2.14] - 2017-08-28
 
 ## Added
