@@ -214,13 +214,11 @@ class TypoNewsImporter extends NewsImporter
      */
     public function convert_external_link_tags($html)
     {
-        $pattern     = '/<link\s(.+)\s-\s(.*)?\s(".*")?>(.+)<\/link>/U';
-        $replacement = '<a href="$1" target="$2">$4</a>';
-        $html        = preg_replace($pattern, $replacement, $html);
+        $pattern = '/<link\s(.+)\s-\s(.*)?\s(".*")?>(.+)<\/link>/U';
+        $replacement = '<a href="$1" target="_blank">$4</a>';
+        preg_match_all($pattern, $html, $matches, PREG_PATTERN_ORDER);
 
-        $html = str_replace(' target="external-link"', ' target="_blank"', $html);
-        $html = str_replace(' target="-"', '', $html);
-        return $html;
+        return preg_replace($pattern, $replacement, $html);
     }
 
     /**

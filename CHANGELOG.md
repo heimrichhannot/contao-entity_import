@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.17] - 2017-09-05
+
+## Fixed
+- TypoNewsImporter external link conversion
+
 ## [1.2.16] - 2017-08-29
 
 ## Fixed
