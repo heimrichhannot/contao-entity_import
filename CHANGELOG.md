@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.18] - 2017-09-07
+
+## Fixed
+- `Newsimporter` cleanHtml replaces now `<div>` with `<p>`
+
 ## [1.2.17] - 2017-09-05
 
 ## Fixed

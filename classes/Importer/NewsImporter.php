@@ -76,7 +76,7 @@ class NewsImporter extends Importer
     {
         // need to wrap <p> around text for contao
         $tidyConfig = [
-            'enclose-block-text'          => true,
+            'enclose-text'                => true,
             'drop-font-tags'              => true,
             'drop-proprietary-attributes' => true,
             'quote-ampersand'             => true,
@@ -85,7 +85,9 @@ class NewsImporter extends Importer
             'wrap'                        => 500,
         ];
 
-        $bodyText = $this->nl2p($html);
+        $bodyText = preg_replace("#<(\/?)(div>)#is", "<$1p>", $html); // div to p
+
+        $bodyText = $this->nl2p($bodyText);
 
         $bodyText = '<!DOCTYPE html><head><title></title></head><body>' . $bodyText . '</body></html>';
 
