@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.19] - 2017-09-07
+
+## Fixed
+- `Importer::copyFile` did overwrite files uuid if file was copied before within other entity
+
 ## [1.2.18] - 2017-09-07
 
 ## Fixed

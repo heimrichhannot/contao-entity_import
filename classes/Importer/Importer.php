@@ -757,14 +757,13 @@ class Importer extends \Backend
         }
 
         $objFile = new \File($strRelFile);
-
-        // remove previous models with the same file name
-        if (($objModel = \FilesModel::findMultipleByPaths([$objTargetDir->path . '/' . $objFile->name])) !== null)
-        {
-            $objModel->delete();
-        }
-
         $strDestination = $objTargetDir->path . '/' . $objFile->name;
+
+        // if file was copied before (within another entity) return its model
+        if (($objModel = \FilesModel::findMultipleByPaths([$strDestination])) !== null && file_exists(TL_ROOT . '/' . $strDestination))
+        {
+            return $objModel->current();
+        }
 
         $objFile->copyTo($strDestination);
         $objModel = \FilesModel::findByPath($strDestination);

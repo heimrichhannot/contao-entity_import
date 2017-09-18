@@ -28,8 +28,8 @@ class NewsImporter extends Importer
             $objItem->teaser_short = $this->cleanHtml($objItem->teaser_short, $objItem);
         }
 
-        if ($objItem->info_box_text_text) {
-            $objItem->info_box_text_text = $this->cleanHtml($objItem->info_box_text_text, $objItem);
+        if ($objItem->infoBox_text) {
+            $objItem->infoBox_text = $this->cleanHtml($objItem->infoBox_text, $objItem);
         }
 
         $objItem->save();
