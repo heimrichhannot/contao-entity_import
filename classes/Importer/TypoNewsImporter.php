@@ -180,10 +180,10 @@ class TypoNewsImporter extends NewsImporter
 
         if ($imageReference->title || $imageReference->alternative || $imageReference->link || $imageReference->description) {
             $arrMeta['de'] = [
-                'title'   => $imageReference->title ?: '',
-                'alt'     => $imageReference->alternative ?: '',
-                'link'    => $imageReference->link ?: '',
-                'caption' => $imageReference->description ?: ($imageReference->title ?: ''),
+                'title'   => strip_tags($imageReference->title ?: ''),
+                'alt'     => strip_tags($imageReference->alternative ?: ''),
+                'link'    => strip_tags($imageReference->link ?: ''),
+                'caption' => strip_tags($imageReference->description ?: ($imageReference->title ?: '')),
             ];
 
             $objModel->meta = $arrMeta;

@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.20] - 2017-09-28
+
+## Fixed
+- `TypoNewsImporter` strip tags for image alt, link, title and description
+
 ## [1.2.19] - 2017-09-07
 
 ## Fixed
