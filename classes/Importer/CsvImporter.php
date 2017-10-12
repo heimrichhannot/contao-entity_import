@@ -12,15 +12,19 @@ class CsvImporter extends DatabaseImporter
 
     public function __construct($objModel)
     {
-        if ($objModel instanceof \Model) {
+        if ($objModel instanceof \Model)
+        {
             $this->objModel = $objModel;
-        } elseif ($objModel instanceof \Model\Collection) {
+        }
+        elseif ($objModel instanceof \Model\Collection)
+        {
             $this->objModel = $objModel->current();
         }
 
         \Backend::__construct();
 
-        if ($objModel->purgeBeforeImport && !$this->dryRun) {
+        if ($objModel->purgeBeforeImport && !$this->dryRun)
+        {
             $this->purgeBeforeImport($objModel);
         }
 
@@ -39,11 +43,13 @@ class CsvImporter extends DatabaseImporter
 
         $this->collectItems();
 
-        if (empty($this->arrItems)) {
+        if (empty($this->arrItems))
+        {
             return false;
         }
 
-        foreach ($this->arrItems as $arrItem) {
+        foreach ($this->arrItems as $arrItem)
+        {
             $arrItem = $this->createObjectFromMapping($arrItem);
             $this->createImportMessage($arrItem);
         }
@@ -53,14 +59,16 @@ class CsvImporter extends DatabaseImporter
 
     protected function collectItems()
     {
-        if ($strSourceFile = Files::getPathFromUuid($this->sourceFile)) {
+        if ($strSourceFile = Files::getPathFromUuid($this->sourceFile))
+        {
             $objCsv = new CsvReader($strSourceFile);
             $objCsv->setDelimiter($this->delimiter);
             $objCsv->setEnclosure($this->enclosure);
             $objCsv->rewind();
             $objCsv->next();
 
-            while ($arrCurrent = $objCsv->current()) {
+            while ($arrCurrent = $objCsv->current())
+            {
                 $this->arrItems[] = $arrCurrent;
                 $objCsv->next();
             }
@@ -76,34 +84,41 @@ class CsvImporter extends DatabaseImporter
 
         $arrItem = [];
 
-        foreach (deserialize($this->fileFieldMapping, true) as $arrConfig) {
-            if ($arrConfig['type'] == 'source') {
+        foreach (deserialize($this->fileFieldMapping, true) as $arrConfig)
+        {
+            if ($arrConfig['type'] == 'source')
+            {
                 $varValue = $arrSourceItem[$arrConfig['source'] - 1];
-            } else {
-                if ($arrConfig['type'] == 'value' && !empty($arrConfig['value'])) {
+            }
+            else
+            {
+                if ($arrConfig['type'] == 'value' && !empty($arrConfig['value']))
+                {
                     $varValue = $arrConfig['value'];
                 }
             }
 
-            if ($varValue) {
+            if ($varValue)
+            {
                 $varValue = $arrConfig['transformToArray'] ? serialize(explode($this->arrayDelimiter, $varValue)) : $varValue;
             }
 
             $this->setObjectValueFromMapping($arrItem, $varValue, $arrConfig['target']);
 
-            if ($varValue === null) {
+            if ($varValue === null)
+            {
                 unset($arrItem[$arrConfig['target']]);
                 continue;
             }
         }
 
-        if (!$this->dryRun) {
-            if (!$this->skipInsertion) {
+        if (!$this->dryRun)
+        {
+            if (!$this->skipInsertion)
+            {
                 $strQuery = "INSERT INTO $t (" . implode(',', array_keys($arrItem)) . ") VALUES(" . implode(
                         ',',
-                        array_map(function ($val) {
-                            return "'" . str_replace("'", "''", $val) . "'";
-                        }, array_values($arrItem))
+                        array_map(function ($val) { return "'" . str_replace("'", "''", $val) . "'"; }, array_values($arrItem))
                     ) . ")";
 
                 $arrItem['id'] = $objDatabase->execute($strQuery)->insertId;
@@ -113,10 +128,13 @@ class CsvImporter extends DatabaseImporter
             $this->runAfterSaving($arrItem, $arrSourceItem);
 
             // save updates
-            if (!$this->skipUpdateAfterSave) {
+            if (!$this->skipUpdateAfterSave)
+            {
                 $arrTargetItemPrepared = [];
-                foreach ($arrItem as $strKey => $strVal) {
-                    if ($strKey == 'id') {
+                foreach ($arrItem as $strKey => $strVal)
+                {
+                    if ($strKey == 'id')
+                    {
                         continue;
                     }
 

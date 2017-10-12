@@ -32,7 +32,7 @@ class TypoNewsImporter extends NewsImporter
             $this->importWriter($objItem, $objSourceItem);
         }
 
-        if ($objItem->start != '' || $objItem->start != '') {
+        if ($objItem->start != '' || $objItem->stop != '') {
             $this->setPublished($objItem, $objSourceItem);
         }
 
@@ -214,8 +214,15 @@ class TypoNewsImporter extends NewsImporter
      */
     public function convert_external_link_tags($html)
     {
-        $pattern = '/<link\s(.+)\s-\s(.*)?\s(".*")?>(.+)<\/link>/U';
+        $pattern     = '/<link\s(.+)\s-\s(.*)?\s(".*")?>(.+)<\/link>/U';
         $replacement = '<a href="$1" target="_blank">$4</a>';
+        preg_match_all($pattern, $html, $matches, PREG_PATTERN_ORDER);
+
+        $html = preg_replace($pattern, $replacement, $html);
+
+        // 2nd check for links without url inside quote
+        $pattern     = '/<link\s(.*)?>(.+)<\/link>/U';
+        $replacement = '<a href="$1" target="_blank">$2</a>';
         preg_match_all($pattern, $html, $matches, PREG_PATTERN_ORDER);
 
         return preg_replace($pattern, $replacement, $html);

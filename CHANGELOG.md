@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.22] - 2017-10-12
+
+## Changed
+- Moved functions from TypoNewsImporter into parent Importer class
+
 ## [1.2.21] - 2017-10-12
 
 ## Fixed
