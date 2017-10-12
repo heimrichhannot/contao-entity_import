@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.21] - 2017-10-12
+
+## Fixed
+- `CsvImporter`, missing dependency
+
 ## [1.2.20] - 2017-09-28
 
 ## Fixed
