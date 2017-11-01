@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.23] - 2017-11-01
+
+## Fixed
+- file importer issues
+
 ## [1.2.22] - 2017-10-12
 
 ## Changed

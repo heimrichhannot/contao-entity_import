@@ -645,11 +645,15 @@ class Importer extends \Backend
         return $objModel !== null ? $objModel->uuid : null;
     }
 
+    protected function getFieldMapping() {
+        return deserialize($this->dbFieldMapping, true);
+    }
+
     protected function setObjectValueFromMapping(&$objItem, $value, $key)
     {
         $config = null;
 
-        foreach ($this->arrRawFieldMapping as $mapping)
+        foreach ($this->getFieldMapping() as $mapping)
         {
             if ($mapping['target'] == $key)
             {

@@ -75,6 +75,10 @@ class CsvImporter extends DatabaseImporter
         }
     }
 
+    protected function getFieldMapping() {
+        return deserialize($this->fileFieldMapping, true);
+    }
+
     protected function createObjectFromMapping($arrSourceItem, $strClass = null)
     {
         $objDatabase = \Database::getInstance();
