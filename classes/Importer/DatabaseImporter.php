@@ -57,12 +57,28 @@ class DatabaseImporter extends Importer
         {
             if (!$this->skipInsertion)
             {
-                $strQuery = "INSERT INTO $t (" . implode(',', array_keys($arrItem)) . ") VALUES(" . implode(
-                        ',',
-                        array_map(function ($val) { return "'" . str_replace("'", "''", $val) . "'"; }, array_values($arrItem))
-                    ) . ")";
+                if ($this->addMerge && null !== ($existingInstance = $this->findExistingModelInstanceForMerge($objSourceItem->row())))
+                {
+                    $queryValues = [];
 
-                $arrItem['id'] = $objDatabase->execute($strQuery)->insertId;
+                    foreach ($arrItem as $field => $value)
+                    {
+                        $queryValues[] = $field . "='" . $value . "'";
+                    }
+
+                    $objDatabase->execute("UPDATE $t SET " . implode(',', $queryValues) . " WHERE $t.id=" . $existingInstance->id);
+
+                    $arrItem['id'] = $existingInstance->id;
+                }
+                else
+                {
+                    $strQuery = "INSERT INTO $t (" . implode(',', array_keys($arrItem)) . ") VALUES(" . implode(
+                            ',',
+                            array_map(function ($val) { return "'" . str_replace("'", "''", $val) . "'"; }, array_values($arrItem))
+                        ) . ")";
+
+                    $arrItem['id'] = $objDatabase->execute($strQuery)->insertId;
+                }
             }
 
             // do after item has been created,

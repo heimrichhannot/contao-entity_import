@@ -73,7 +73,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = [
     ],
     // Palettes
     'palettes'     => [
-        '__selector__' => ['type', 'useTimeInterval', 'purgeBeforeImport', 'purgeAdditionalTables'],
+        '__selector__' => ['type', 'useTimeInterval', 'purgeBeforeImport', 'purgeAdditionalTables', 'addMerge'],
         'default'      => '{title_legend},title,description;',
     ],
     // Subpalettes
@@ -81,11 +81,12 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = [
         'useTimeInterval'       => 'start,end',
         'purgeBeforeImport'     => 'whereClausePurge, purgeAdditionalTables',
         'purgeAdditionalTables' => 'additionalTablesToPurge',
+        'addMerge'              => 'mergeIdentifierFields'
     ],
     // type palettes
     'typepalettes' => [
-        ENTITY_IMPORT_CONFIG_TYPE_DATABASE => '{config_legend},dbSourceTable,dbTargetTable,importerClass,purgeBeforeImport, dbFieldMapping,useTimeInterval,whereClause,sourceDir,targetDir,dbFieldFileMapping;',
-        ENTITY_IMPORT_CONFIG_TYPE_FILE     => '{config_legend},sourceFile,delimiter,enclosure,arrayDelimiter,dbTargetTable,importerClass,purgeBeforeImport,fileFieldMapping,sourceDir,targetDir;',
+        ENTITY_IMPORT_CONFIG_TYPE_DATABASE => '{config_legend},dbSourceTable,dbTargetTable,importerClass,purgeBeforeImport,addMerge,dbFieldMapping,useTimeInterval,whereClause,sourceDir,targetDir,dbFieldFileMapping;',
+        ENTITY_IMPORT_CONFIG_TYPE_FILE     => '{config_legend},sourceFile,delimiter,enclosure,arrayDelimiter,dbTargetTable,importerClass,purgeBeforeImport,addMerge,fileFieldMapping,sourceDir,targetDir;',
     ],
     // Fields
     'fields'       => [
@@ -246,6 +247,43 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = [
                             'eval'      => [
                                 'groupStyle'          => 'width:200px',
                                 'decodeEntities' => true,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'sql'       => "blob NULL",
+        ],
+        'addMerge' => [
+            'label'                   => &$GLOBALS['TL_LANG']['tl_entity_import_config']['addMerge'],
+            'exclude'                 => true,
+            'inputType'               => 'checkbox',
+            'eval'                    => ['tl_class' => 'w50', 'submitOnChange' => true],
+            'sql'                     => "char(1) NOT NULL default ''"
+        ],
+        'mergeIdentifierFields'          => [
+            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['mergeIdentifierFields'],
+            'inputType' => 'multiColumnEditor',
+            'exclude'   => true,
+            'eval'      => [
+                'tl_class'          => 'clr',
+                'multiColumnEditor' => [
+                    'fields' => [
+                        'source'    => [
+                            'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping']['source'],
+                            'inputType'        => 'select',
+                            'options_callback' => ['tl_entity_import_config', 'getSourceFields'],
+                            'eval'             => [
+                                'groupStyle'              => 'width:300px',
+                                'includeBlankOption' => true, 'chosen' => true, 'mandatory' => true
+                            ],
+                        ],
+                        'target'    => [
+                            'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['dbFieldMapping']['target'],
+                            'inputType'        => 'select',
+                            'options_callback' => ['tl_entity_import_config', 'getMergeTargetFields'],
+                            'eval'             => [
+                                'groupStyle' => 'width:300px', 'chosen' => true, 'mandatory' => true, 'includeBlankOption' => true
                             ],
                         ],
                     ],
@@ -478,6 +516,15 @@ class tl_entity_import_config extends \Backend
         // add default palettes
         $arrDca['palettes']['default'] .= $arrDca['typepalettes'][$strParentType];
 
+        switch ($strParentType)
+        {
+            case ENTITY_IMPORT_CONFIG_TYPE_DATABASE:
+                break;
+            default:
+                $arrDca['fields']['mergeIdentifierFields']['eval']['multiColumnEditor']['fields']['source']['inputType'] = 'text';
+                break;
+        }
+
         // HOOK: add custom logic
         if (isset($GLOBALS['TL_HOOKS']['initEntityImportPalettes']) && is_array($GLOBALS['TL_HOOKS']['initEntityImportPalettes']))
         {
@@ -585,6 +632,15 @@ class tl_entity_import_config extends \Backend
             $arrOptions[$arrField['name']] = $arrField['name'] . ' [' . $arrField['origtype'] . ']';
         }
 
+
+        return $arrOptions;
+    }
+
+    public function getMergeTargetFields($dc)
+    {
+        $arrOptions = $this->getTargetFields($dc);
+
+        unset($arrOptions['tl_content']);
 
         return $arrOptions;
     }

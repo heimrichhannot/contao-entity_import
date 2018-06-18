@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.0] - 2018-06-18
+
+## Added
+- support for merging (updating) existing entities based on equality of certain fields (id, email, ...)
+
 ## [1.2.23] - 2017-11-01
 
 ## Fixed

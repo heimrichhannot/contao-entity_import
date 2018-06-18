@@ -64,14 +64,7 @@ $GLOBALS['TL_DCA']['tl_entity_import'] = [
                 'label' => &$GLOBALS['TL_LANG']['tl_entity_import']['show'],
                 'href'  => 'act=show',
                 'icon'  => 'show.gif',
-            ],
-            // TODO: check if import all is possible?
-            //			'import' => array
-            //			(
-            //				'label' => &$GLOBALS['TL_LANG']['tl_entity_import']['import'],
-            //				'href'  => 'key=import',
-            //				'icon'  => 'system/modules/devtools/assets/apply.gif'
-            //			)
+            ]
         ],
     ],
 

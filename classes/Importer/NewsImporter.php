@@ -2,8 +2,6 @@
 
 namespace HeimrichHannot\EntityImport\Importer;
 
-use Wa72\HtmlPageDom\HtmlPageCrawler;
-
 class NewsImporter extends Importer
 {
     protected function runAfterSaving(&$objItem, $objSourceItem)

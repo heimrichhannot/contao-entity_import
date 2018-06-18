@@ -80,6 +80,10 @@ $arrLang['purgeAdditionalTables']                =
     ['Datensätze in zusätzlichen Tabellen vor dem Import löschen', 'Wählen Sie diese Option, wenn in zusätzlichen Tabellen vor jedem Import Datensätze gelöscht werden sollen.'];
 $arrLang['additionalTablesToPurge']              = ['Zusätzliche Tabellen'];
 $arrLang['tableToPurge']                         = ['Zusätzliche Tabelle auswählen'];
+$arrLang['addMerge']                             = ['Beim Importieren mit bereits bestehenden zusammenführen (Merge)', 'Wählen Sie diese Option, wenn beim Importieren bereits bestehende Datensätze mit den zu importierenden Datensätzen zusammengeführt werden sollen.'];
+$arrLang['mergeIdentifierFields']                = ['Merge-Identifikationsfelder', 'Wählen Sie hier die Felder aus, die für das Auffinden bestehender Datensätze genutzt werden sollen (bspw. E-Mail, ID, Vorname + Nachname, ...).'];
+
+
 /**
  * Legends
  */

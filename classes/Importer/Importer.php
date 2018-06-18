@@ -5,6 +5,7 @@ namespace HeimrichHannot\EntityImport\Importer;
 use Haste\Util\StringUtil;
 use HeimrichHannot\EntityImport\Database;
 use HeimrichHannot\EntityImport\EntityImportModel;
+use HeimrichHannot\Haste\Dca\General;
 use HeimrichHannot\Haste\Model\Model;
 use Wa72\HtmlPageDom\HtmlPageCrawler;
 
@@ -352,6 +353,34 @@ class Importer extends \Backend
         $this->runAfterComplete($this->objItems);
 
         return true;
+    }
+
+    public function findExistingModelInstanceForMerge(array $sourceItem)
+    {
+        $identifierFields = deserialize($this->mergeIdentifierFields, true);
+
+        if (empty($identifierFields))
+        {
+            return null;
+        }
+
+        $columns = [];
+        $values = [];
+
+        foreach ($identifierFields as $fieldData)
+        {
+            $columns[] = $this->dbTargetTable . '.' . $fieldData['target'] . '=?';
+            $values[] = $sourceItem[intval($fieldData['source']) - 1];
+        }
+
+        $strItemClass = \Model::getClassFromTable($this->dbTargetTable);
+
+        if (!class_exists($strItemClass))
+        {
+            return null;
+        }
+
+        return $strItemClass::findOneBy($columns, $values);
     }
 
     protected function collectItems()
