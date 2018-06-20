@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.1] - 2018-06-20
+
+## Fixed
+- remove css in front end mode
+
 ## [1.3.0] - 2018-06-18
 
 ## Added

@@ -39,8 +39,9 @@ define('ENTITY_IMPORT_NEWS_WRITERS_MEMBER_GROUP_NAME', 'News writers');
 /**
  * CSS
  */
-
-$GLOBALS['TL_CSS']['entity_import'] = 'system/modules/entity_import/assets/css/entity_import.css';
+if (TL_MODE == 'BE') {
+    $GLOBALS['TL_CSS']['entity_import'] = 'system/modules/entity_import/assets/css/entity_import.css';
+}
 
 /**
  * Importers
