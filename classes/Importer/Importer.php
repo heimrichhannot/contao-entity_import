@@ -478,6 +478,8 @@ class Importer extends \Backend
 
             $this->setObjectValueFromMapping($objItem, $value, $key);
 
+            $data = $objItem->row();
+
             if ($value === null)
             {
                 continue;
@@ -490,6 +492,16 @@ class Importer extends \Backend
             }
 
             $objItem->save();
+            $rowAfterSaving = $objItem->row();
+
+            // set pseudo values that got lost by saving (e.g. tl_content)
+            foreach ($data as $field => $value)
+            {
+                if (isset($rowAfterSaving[$field]))
+                {
+                    $objItem->{$field} = $value;
+                }
+            }
         }
 
 

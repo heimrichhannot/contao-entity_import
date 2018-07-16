@@ -28,6 +28,10 @@ class DatabaseImporter extends Importer
             $this->createImportMessage($arrItem);
         }
 
+        // reset the iterator
+        $this->objItems->reset();
+        $this->runAfterComplete($this->objItems);
+
         return true;
     }
 

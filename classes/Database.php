@@ -28,7 +28,7 @@ class Database extends \Database
                 'host'     => $arrConfig['dbHost'],
                 'port'     => $arrConfig['dbPort'],
                 'user'     => $arrConfig['dbUser'],
-                'password' => $arrConfig['dbPass'],
+                'password' => html_entity_decode($arrConfig['dbPass']),
                 'dbname'   => $arrConfig['dbDatabase'],
                 'charset'  => $arrConfig['dbCharset'],
 

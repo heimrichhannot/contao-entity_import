@@ -1,79 +1,86 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.2] - 2018-06-20
+
+### Fixed
+- decode entities in db password
+- tl_content issues
+- call to runAfterComplete() in DatabaseImporter
+
 ## [1.3.1] - 2018-06-20
 
-## Fixed
+### Fixed
 - remove css in front end mode
 
 ## [1.3.0] - 2018-06-18
 
-## Added
+### Added
 - support for merging (updating) existing entities based on equality of certain fields (id, email, ...)
 
 ## [1.2.23] - 2017-11-01
 
-## Fixed
+### Fixed
 - file importer issues
 
 ## [1.2.22] - 2017-10-12
 
-## Changed
+### Changed
 - Moved functions from TypoNewsImporter into parent Importer class
 
 ## [1.2.21] - 2017-10-12
 
-## Fixed
+### Fixed
 - `CsvImporter`, missing dependency
 
 ## [1.2.20] - 2017-09-28
 
-## Fixed
+### Fixed
 - `TypoNewsImporter` strip tags for image alt, link, title and description
 
 ## [1.2.19] - 2017-09-07
 
-## Fixed
+### Fixed
 - `Importer::copyFile` did overwrite files uuid if file was copied before within other entity
 
 ## [1.2.18] - 2017-09-07
 
-## Fixed
+### Fixed
 - `Newsimporter` cleanHtml replaces now `<div>` with `<p>`
 
 ## [1.2.17] - 2017-09-05
 
-## Fixed
+### Fixed
 - TypoNewsImporter external link conversion
 
 ## [1.2.16] - 2017-08-29
 
-## Fixed
+### Fixed
 - clean html properly within NewsImporter
 
 ## [1.2.15] - 2017-08-29
 
-## Fixed
+### Fixed
 - NewsImporter, removed non existing class
 
 ## [1.2.14] - 2017-08-28
 
-## Added
+### Added
 - TypoNewsImporter, convert external <link> tags
 
 ## [1.2.13] - 2017-08-28
 
-## Fixed
+### Fixed
 - updated to multi_column_editor 1.2.0, removed too globally defined styles
 
 ## [1.2.12] - 2017-08-28
 
-## Changed
+### Changed
 - TypoNewsImporter, import article image title also as caption
 
 ## [1.2.11] - 2017-08-28
 
-## Changed
+### Changed
 - wrap news teaser inside paragraphs
 
 ## [1.2.10] - 2017-08-25
@@ -93,7 +100,7 @@ All notable changes to this project will be documented in this file.
 
 ## [1.2.7] - 2017-08-23
 
-## Changed
+### Changed
 - try to set `max_execution_time` to 0
 
 ## [1.2.6] - 2017-08-23
