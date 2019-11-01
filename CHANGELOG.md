@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.4.0] - 2018-11-01
+
+### Added
+- import from external url source
+- inserttag {{file_uuid::*}} and {{file_bin::*}}
+
 ## [1.3.2] - 2018-06-20
 
 ### Fixed

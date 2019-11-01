@@ -28,11 +28,15 @@ $GLOBALS['TL_HOOKS']['initEntityImportPalettes'] = [
     'initNewsPalette' => ['tl_entity_import_config', 'initNewsPalette'],
 ];
 
+$GLOBALS['TL_HOOKS']['replaceInsertTags']['entityImportInsertTag'] = [\HeimrichHannot\EntityImport\EventListener\InserttagListener::class, 'onReplaceInsertTags'];
+
+
 /**
  * Constants
  */
 define('ENTITY_IMPORT_CONFIG_TYPE_DATABASE', 'db');
 define('ENTITY_IMPORT_CONFIG_TYPE_FILE', 'file');
+define('ENTITY_IMPORT_CONFIG_TYPE_EXTERNAL', 'external');
 define('ENTITY_IMPORT_FILE_COL_SUFFIX', 'EColE_');
 define('ENTITY_IMPORT_NEWS_WRITERS_MEMBER_GROUP_NAME', 'News writers');
 
@@ -54,5 +58,15 @@ $GLOBALS['ENTITY_IMPORTER'] = array_merge(
         'HeimrichHannot\EntityImport\Importer\Importer'         => 'DefaultImporter',
         'HeimrichHannot\EntityImport\Importer\NewsImporter'     => 'NewsImporter',
         'HeimrichHannot\EntityImport\Importer\TypoNewsImporter' => 'Typo3NewsImporter',
+        'HeimrichHannot\EntityImport\Importer\ExternalImporter' => 'ExternalImporter',
     ]
 );
+
+/**
+ * Cronjob
+ */
+$GLOBALS['TL_CRON']['monthly'][]    = ['HeimrichHannot\EntityImport\CronHelper', 'monthly'];
+$GLOBALS['TL_CRON']['weekly'][]     = ['HeimrichHannot\EntityImport\CronHelper', 'weekly'];
+$GLOBALS['TL_CRON']['daily'][]      = ['HeimrichHannot\EntityImport\CronHelper', 'daily'];
+$GLOBALS['TL_CRON']['hourly'][]     = ['HeimrichHannot\EntityImport\CronHelper', 'hourly'];
+$GLOBALS['TL_CRON']['minutely'][]   = ['HeimrichHannot\EntityImport\CronHelper', 'minutely'];

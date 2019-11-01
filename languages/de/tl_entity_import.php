@@ -7,6 +7,7 @@ $GLOBALS['TL_LANG']['tl_entity_import']['title']                                
 $GLOBALS['TL_LANG']['tl_entity_import']['type']                                     = ['Typ', 'Wählen Sie hier den Typ des Imports aus.'];
 $GLOBALS['TL_LANG']['tl_entity_import']['type'][ENTITY_IMPORT_CONFIG_TYPE_DATABASE] = 'Datenbank';
 $GLOBALS['TL_LANG']['tl_entity_import']['type'][ENTITY_IMPORT_CONFIG_TYPE_FILE]     = 'Datei';
+$GLOBALS['TL_LANG']['tl_entity_import']['type'][ENTITY_IMPORT_CONFIG_TYPE_EXTERNAL] = 'Extern';
 $GLOBALS['TL_LANG']['tl_entity_import']['dbDriver']                                 = ['Treiber', 'Wählen Sie hier den Datenbanktreiber aus.'];
 $GLOBALS['TL_LANG']['tl_entity_import']['dbHost']                                   = ['Host', 'Geben Sie hier die Adresse des Datenbankhosts ein.'];
 $GLOBALS['TL_LANG']['tl_entity_import']['dbUser']                                   = ['Nutzer', 'Geben Sie hier einen berechtigten Datenbanknutzer ein.'];
@@ -15,12 +16,15 @@ $GLOBALS['TL_LANG']['tl_entity_import']['dbDatabase']                           
 $GLOBALS['TL_LANG']['tl_entity_import']['dbPconnect']                               = ['PConnect', 'Wählen Sie hier, ob Sie PConnect nutzen möchten.'];
 $GLOBALS['TL_LANG']['tl_entity_import']['dbCharset']                                = ['Zeichensatz', 'Wählen Sie hier den gewünschten Zeichensatz aus.'];
 $GLOBALS['TL_LANG']['tl_entity_import']['dbSocket']                                 = ['Socket', 'Geben Sie hier einen Socket ein.'];
+$GLOBALS['TL_LANG']['tl_entity_import']['externalUrl']                              = ['Url', 'Tragen Sie hier die Url ein, von der die Daten importiert werden sollen.'];
+
 
 /**
  * Legends
  */
 $GLOBALS['TL_LANG']['tl_entity_import']['title_legend'] = 'Titel';
 $GLOBALS['TL_LANG']['tl_entity_import']['db_legend']    = 'Datenbankeinstellungen';
+$GLOBALS['TL_LANG']['tl_entity_import']['external_legend']    = 'Externe Quelle';
 
 /**
  * Buttons

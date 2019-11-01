@@ -74,6 +74,7 @@ $GLOBALS['TL_DCA']['tl_entity_import'] = [
         'default'      => '{title_legend},title,type;',
         'db'           => '{title_legend},title,type;{db_legend},dbDriver,dbHost,dbUser,dbPass,dbDatabase,dbPconnect,dbCharset,dbPort,dbSocket',
         'file'         => '{title_legend},title,type;',
+        'external'     => '{title_legend},title,type;{external_legend},externalUrl'
     ],
 
     // Subpalettes
@@ -102,6 +103,7 @@ $GLOBALS['TL_DCA']['tl_entity_import'] = [
             'options'   => [
                 ENTITY_IMPORT_CONFIG_TYPE_DATABASE,
                 ENTITY_IMPORT_CONFIG_TYPE_FILE,
+                ENTITY_IMPORT_CONFIG_TYPE_EXTERNAL
             ],
             'reference' => &$GLOBALS['TL_LANG']['tl_entity_import']['type'],
             'eval'      => ['submitOnChange' => true, 'includeBlankOption' => true, 'tl_class' => 'w50'],
@@ -178,6 +180,13 @@ $GLOBALS['TL_DCA']['tl_entity_import'] = [
             'eval'      => ['tl_class' => 'w50'],
             'sql'       => "varchar(64) NOT NULL default ''",
         ],
+        'externalUrl' => [
+            'exclude' => true,
+            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import']['externalUrl'],
+            'inputType' => 'text',
+            'eval'      => ['tl_class' => 'w50', 'rgxp' => 'url'],
+            'sql'       => "varchar(64) NOT NULL default ''",
+        ]
     ],
 ];
 

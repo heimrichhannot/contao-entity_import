@@ -3,6 +3,9 @@
 /**
  * Table tl_extension
  */
+
+use HeimrichHannot\EntityImport\Importer\ExternalImporter;
+
 $GLOBALS['TL_DCA']['tl_entity_import_config'] = [
 
     // Config
@@ -73,7 +76,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = [
     ],
     // Palettes
     'palettes'     => [
-        '__selector__' => ['type', 'useTimeInterval', 'purgeBeforeImport', 'purgeAdditionalTables', 'addMerge'],
+        '__selector__' => ['type', 'useTimeInterval', 'purgeBeforeImport', 'purgeAdditionalTables', 'addMerge', 'useCron'],
         'default'      => '{title_legend},title,description;',
     ],
     // Subpalettes
@@ -81,12 +84,14 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = [
         'useTimeInterval'       => 'start,end',
         'purgeBeforeImport'     => 'whereClausePurge, purgeAdditionalTables',
         'purgeAdditionalTables' => 'additionalTablesToPurge',
-        'addMerge'              => 'mergeIdentifierFields'
+        'addMerge'              => 'mergeIdentifierFields',
+        'useCron'               => 'cronInterval'
     ],
     // type palettes
     'typepalettes' => [
         ENTITY_IMPORT_CONFIG_TYPE_DATABASE => '{config_legend},dbSourceTable,dbTargetTable,importerClass,purgeBeforeImport,addMerge,dbFieldMapping,useTimeInterval,whereClause,sourceDir,targetDir,dbFieldFileMapping;',
         ENTITY_IMPORT_CONFIG_TYPE_FILE     => '{config_legend},sourceFile,delimiter,enclosure,arrayDelimiter,dbTargetTable,importerClass,purgeBeforeImport,addMerge,fileFieldMapping,sourceDir,targetDir;',
+        ENTITY_IMPORT_CONFIG_TYPE_EXTERNAL => '{config_legend},importerClass,purgeBeforeImport,addMerge,dbTargetTable,useCron,publishAfterImport;{external_legend_mapping},externalFieldMapping;{external_legend_exception},externalImportExceptions;{external_legend_exclusion},externalImportExclusions;',
     ],
     // Fields
     'fields'       => [
@@ -146,7 +151,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = [
             'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['purgeBeforeImport'],
             'exclude'   => true,
             'inputType' => 'checkbox',
-            'eval'      => ['submitOnChange' => true, 'tl_class' => 'w50'],
+            'eval'      => ['submitOnChange' => true, 'tl_class' => 'clr w50'],
             'sql'       => "char(1) NOT NULL default ''",
         ],
         'whereClausePurge'        => [
@@ -258,7 +263,7 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = [
             'label'                   => &$GLOBALS['TL_LANG']['tl_entity_import_config']['addMerge'],
             'exclude'                 => true,
             'inputType'               => 'checkbox',
-            'eval'                    => ['tl_class' => 'w50', 'submitOnChange' => true],
+            'eval'                    => ['tl_class' => 'clr w50', 'submitOnChange' => true],
             'sql'                     => "char(1) NOT NULL default ''"
         ],
         'mergeIdentifierFields'          => [
@@ -291,15 +296,6 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = [
             ],
             'sql'       => "blob NULL",
         ],
-        //		'pids'           => array
-        //		(
-        //			'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['pids'],
-        //			'inputType'        => 'checkbox',
-        //			'exclude'          => true,
-        //			'eval'             => array('mandatory' => true, 'submitOnChange' => true, 'multiple' => true),
-        //			'options_callback' => array('tl_entity_import_config', 'getPidsFromTable'),
-        //			'sql'              => "blob NULL",
-        //		),
         'useTimeInterval'         => [
             'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['useTimeInterval'],
             'exclude'   => true,
@@ -501,6 +497,186 @@ $GLOBALS['TL_DCA']['tl_entity_import_config'] = [
             ],
             'sql'       => "blob NULL",
         ],
+        'useCron'        => [
+            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['useCron'],
+            'inputType' => 'checkbox',
+            'exclude'   => true,
+            'eval'      => [
+                'tl_class'          => 'clr',
+                'submitOnChange'    => true
+            ],
+            'sql'       => "char(1) NOT NULL default ''",
+        ],
+        'cronInterval'        => [
+            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['cronInterval'],
+            'exclude'   => true,
+            'inputType' => 'select',
+            'options'   => ['minutely', 'hourly', 'daily', 'weekly', 'monthly'],
+            'eval'      => ['tl_class' => 'w50', 'includeBlankOption' => false],
+            'sql'       => "varchar(12) NOT NULL default ''",
+        ],
+        'externalFieldMapping'        => [
+            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['externalFieldMapping'],
+            'inputType' => 'multiColumnEditor',
+            'exclude'   => true,
+            'eval'      => [
+                'tl_class'          => 'clr',
+                'multiColumnEditor' => [
+                    'fields' => [
+                        'type'             => [
+                            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['externalFieldMapping']['type'],
+                            'inputType' => 'select',
+                            'options'   => ['source', 'value'],
+                            'reference' => &$GLOBALS['TL_LANG']['tl_entity_import_config']['externalFieldMapping']['type'],
+                            'eval'      => [
+                                'groupStyle' => 'width:180px',
+                            ],
+                        ],
+                        'source'           => [
+                            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['externalFieldMapping']['source'],
+                            'inputType' => 'text',
+                            'eval'      => [
+                                'groupStyle' => 'width:180px',
+                            ],
+                        ],
+                        'value'            => [
+                            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['externalFieldMapping']['value'],
+                            'inputType' => 'text',
+                            'eval'      => [
+                                'groupStyle' => 'width:180px',
+                            ],
+                        ],
+                        'target'           => [
+                            'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['externalFieldMapping']['target'],
+                            'inputType'        => 'select',
+                            'options_callback' => ['tl_entity_import_config', 'getTargetFields'],
+                            'eval'             => [
+                                'groupStyle' => 'width:180px',
+                                'chosen' => true
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'sql'       => "blob NULL",
+        ],
+        'externalImportExceptions'        => [
+            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['externalImportExceptions'],
+            'inputType' => 'multiColumnEditor',
+            'exclude'   => true,
+            'eval'      => [
+                'tl_class'          => 'clr',
+                'multiColumnEditor' => [
+                    'minRowCount' => 0,
+                    'fields' => [
+                        'externalField'             => [
+                            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['externalImportExceptions']['externalField'],
+                            'inputType' => 'text',
+                            'eval'      => [
+                                'groupStyle' => 'width:180px',
+                            ],
+                        ],
+                        'operator'           => [
+                            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['externalImportExceptions']['operator'],
+                            'inputType' => 'select',
+                            'options' => [
+                                'equal',
+                                'notequal',
+                                'lower',
+                                'greater',
+                                'lowerequal',
+                                'greaterequal',
+                                'like'
+                            ],
+                            'reference' => &$GLOBALS['TL_LANG']['tl_entity_import_config']['operators'],
+                            'eval'      => [
+                                'groupStyle' => 'width:75px',
+                                'decodeEntities' => true
+                            ],
+                        ],
+                        'externalValue'            => [
+                            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['externalImportExceptions']['externalValue'],
+                            'inputType' => 'text',
+                            'eval'      => [
+                                'groupStyle' => 'width:180px',
+                            ],
+                        ],
+                        'importField'           => [
+                            'label'            => &$GLOBALS['TL_LANG']['tl_entity_import_config']['externalImportExceptions']['importField'],
+                            'inputType'        => 'select',
+                            'options_callback' => ['tl_entity_import_config', 'getTargetFields'],
+                            'eval'             => [
+                                'groupStyle' => 'width:180px',
+                                'chosen' => true
+                            ],
+                        ],
+                        'importValue'            => [
+                            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['externalImportExceptions']['importValue'],
+                            'inputType' => 'text',
+                            'eval'      => [
+                                'groupStyle' => 'width:180px',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'sql'       => "blob NULL",
+        ],
+        'externalImportExclusions'        => [
+            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['externalImportExclusions'],
+            'inputType' => 'multiColumnEditor',
+            'exclude'   => true,
+            'eval'      => [
+                'tl_class'          => 'clr',
+                'multiColumnEditor' => [
+                    'minRowCount' => 0,
+                    'fields' => [
+                        'externalField'             => [
+                            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['externalImportExclusions']['externalField'],
+                            'inputType' => 'text',
+                            'eval'      => [
+                                'groupStyle' => 'width:180px',
+                            ],
+                        ],
+                        'operator'           => [
+                            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['externalImportExclusions']['operator'],
+                            'inputType' => 'select',
+                            'options' => [
+                                'equal',
+                                'notequal',
+                                'lower',
+                                'greater',
+                                'lowerequal',
+                                'greaterequal',
+                                'like'
+                            ],
+                            'reference' => &$GLOBALS['TL_LANG']['tl_entity_import_config']['operators'],
+                            'eval'      => [
+                                'groupStyle' => 'width:75px',
+                                'decodeEntities' => true
+                            ],
+                        ],
+                        'externalValue'            => [
+                            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['externalImportExclusions']['externalValue'],
+                            'inputType' => 'text',
+                            'eval'      => [
+                                'groupStyle' => 'width:180px',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'sql'       => "blob NULL",
+        ],
+        'publishAfterImport' => [
+            'label'     => &$GLOBALS['TL_LANG']['tl_entity_import_config']['publishAfterImport'],
+            'inputType' => 'checkbox',
+            'exclude'   => true,
+            'eval'      => [
+                'tl_class'          => 'clr w50',
+            ],
+            'sql'       => "char(1) NOT NULL default ''",
+        ]
     ],
 ];
 
@@ -624,7 +800,7 @@ class tl_entity_import_config extends \Backend
 
         foreach ($arrFields as $arrField)
         {
-            if (in_array($arrField['type'], ['index']))
+            if (in_array($arrField, ['index']))
             {
                 continue;
             }
@@ -672,8 +848,12 @@ class tl_entity_import_config extends \Backend
 
     public function getSourceTables(\DataContainer $dc)
     {
+        if(null === ($source = \HeimrichHannot\EntityImport\EntityImportModel::findByPk($dc->activeRecord->pid))){
+            return [];
+        }
+
         $arrTables = \HeimrichHannot\EntityImport\Database::getInstance(
-            \HeimrichHannot\EntityImport\EntityImportModel::findByPk($dc->activeRecord->pid)->row()
+            $source->row()
         )->listTables();
 
         return array_values($arrTables);
@@ -763,6 +943,29 @@ class tl_entity_import_config extends \Backend
 
         return '<div class="tl_content_left">' . $arrRow['title'] . $strText . '</div>';
     }
+
+
+    public function getExternalImporterClasses()
+    {
+        $arrOptions = [];
+
+        $classes = $GLOBALS['EXTERNAL_ENTITY_IMPORTER'];
+
+        foreach ($classes as $strClass => $strName)
+        {
+            if (!@class_exists($strClass))
+            {
+                continue;
+            }
+
+            $arrOptions[$strClass] = $strName;
+        }
+
+        asort($arrOptions);
+
+        return $arrOptions;
+    }
+
 
 }
 

@@ -28,6 +28,7 @@ ClassLoader::addClasses(
         'HeimrichHannot\EntityImport\ModuleEntityImport'        => 'system/modules/entity_import/modules/ModuleEntityImport.php',
 
         // Classes
+        'HeimrichHannot\EntityImport\Importer\External'         => 'system/modules/entity_import/classes/Importer/ExternalImporter.php',
         'HeimrichHannot\EntityImport\Importer\CsvImporter'      => 'system/modules/entity_import/classes/Importer/CsvImporter.php',
         'HeimrichHannot\Typort\TypoModel'                       => 'system/modules/entity_import/classes/TypoModel.php',
         'HeimrichHannot\EntityImport\Database'                  => 'system/modules/entity_import/classes/Database.php',
@@ -35,6 +36,9 @@ ClassLoader::addClasses(
         'HeimrichHannot\EntityImport\Importer\TypoNewsImporter' => 'system/modules/entity_import/classes/Importer/TypoNewsImporter.php',
         'HeimrichHannot\EntityImport\Importer\DatabaseImporter' => 'system/modules/entity_import/classes/Importer/DatabaseImporter.php',
         'HeimrichHannot\EntityImport\Importer\Importer'         => 'system/modules/entity_import/classes/Importer/Importer.php',
+        'HeimrichHannot\EntityImport\Helper\ImporterHelper'     => 'system/modules/entity_import/classes/Helper/ImporterHelper.php',
+        'HeimrichHannot\EntityImport\Helper\CronHelper'         => 'system/modules/entity_import/classes/Helper/CronHelper.php',
+        'HeimrichHannot\EntityImport\EventListener\InserttagListener'    => 'system/modules/entity_import/classes/EventListener/InserttagListener.php',
 
         // Models
         'HeimrichHannot\EntityImport\EntityImportModel'         => 'system/modules/entity_import/models/EntityImportModel.php',
