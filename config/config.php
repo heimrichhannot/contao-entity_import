@@ -65,8 +65,8 @@ $GLOBALS['ENTITY_IMPORTER'] = array_merge(
 /**
  * Cronjob
  */
-$GLOBALS['TL_CRON']['monthly'][]    = ['HeimrichHannot\EntityImport\CronHelper', 'monthly'];
-$GLOBALS['TL_CRON']['weekly'][]     = ['HeimrichHannot\EntityImport\CronHelper', 'weekly'];
-$GLOBALS['TL_CRON']['daily'][]      = ['HeimrichHannot\EntityImport\CronHelper', 'daily'];
-$GLOBALS['TL_CRON']['hourly'][]     = ['HeimrichHannot\EntityImport\CronHelper', 'hourly'];
-$GLOBALS['TL_CRON']['minutely'][]   = ['HeimrichHannot\EntityImport\CronHelper', 'minutely'];
+$GLOBALS['TL_CRON']['monthly'][]    = ['HeimrichHannot\EntityImport\Helper\CronHelper', 'monthly'];
+$GLOBALS['TL_CRON']['weekly'][]     = ['HeimrichHannot\EntityImport\Helper\CronHelper', 'weekly'];
+$GLOBALS['TL_CRON']['daily'][]      = ['HeimrichHannot\EntityImport\Helper\CronHelper', 'daily'];
+$GLOBALS['TL_CRON']['hourly'][]     = ['HeimrichHannot\EntityImport\Helper\CronHelper', 'hourly'];
+$GLOBALS['TL_CRON']['minutely'][]   = ['HeimrichHannot\EntityImport\Helper\CronHelper', 'minutely'];

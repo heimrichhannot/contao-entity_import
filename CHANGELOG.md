@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.4.1] - 2018-11-01
+
+### Fixed
+- fixed error in adding cron methods
+
 ## [1.4.0] - 2018-11-01
 
 ### Added
