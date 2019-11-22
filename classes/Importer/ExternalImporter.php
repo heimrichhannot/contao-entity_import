@@ -50,9 +50,9 @@ class ExternalImporter extends Importer
 
         $this->arrData                  = $objModel->row();
         $this->importUrl                = EntityImportModel::findByPk($objModel->pid)->externalUrl;
-        $this->externalFieldMapping     = StringUtil::deserialize($objModel->externalFieldMapping);
-        $this->externalImportExceptions = StringUtil::deserialize($objModel->externalImportExceptions);
-        $this->externalImportExclusions = StringUtil::deserialize($objModel->externalImportExclusions);
+        $this->externalFieldMapping     = StringUtil::deserialize($objModel->externalFieldMapping, true);
+        $this->externalImportExceptions = StringUtil::deserialize($objModel->externalImportExceptions, true);
+        $this->externalImportExclusions = StringUtil::deserialize($objModel->externalImportExclusions, true);
     }
 
 
@@ -82,7 +82,6 @@ class ExternalImporter extends Importer
 
             if ($this->excludeItemFromImport($sourceItem)) {
                 System::log('exclude: ' . $sourceItem->name, __METHOD__, TL_CRON);
-
                 continue;
             }
 

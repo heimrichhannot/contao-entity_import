@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.4.2] - 2018-11-22
+
+### Fixed
+- forcing array in deserialize-statements 
+
 ## [1.4.1] - 2018-11-01
 
 ### Fixed
