@@ -185,7 +185,7 @@ $GLOBALS['TL_DCA']['tl_entity_import'] = [
             'label'     => &$GLOBALS['TL_LANG']['tl_entity_import']['externalUrl'],
             'inputType' => 'text',
             'eval'      => ['tl_class' => 'w50', 'rgxp' => 'url'],
-            'sql'       => "varchar(64) NOT NULL default ''",
+            'sql'       => "varchar(255) NOT NULL default ''",
         ]
     ],
 ];

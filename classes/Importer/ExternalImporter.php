@@ -50,9 +50,9 @@ class ExternalImporter extends Importer
 
         $this->arrData                  = $objModel->row();
         $this->importUrl                = EntityImportModel::findByPk($objModel->pid)->externalUrl;
-        $this->externalFieldMapping     = StringUtil::deserialize($objModel->externalFieldMapping, true);
-        $this->externalImportExceptions = StringUtil::deserialize($objModel->externalImportExceptions, true);
-        $this->externalImportExclusions = StringUtil::deserialize($objModel->externalImportExclusions, true);
+        $this->externalFieldMapping     = deserialize($objModel->externalFieldMapping, true);
+        $this->externalImportExceptions = deserialize($objModel->externalImportExceptions, true);
+        $this->externalImportExclusions = deserialize($objModel->externalImportExclusions, true);
     }
 
 
@@ -70,6 +70,14 @@ class ExternalImporter extends Importer
         if ($this->objItems === null) {
             return false;
         }
+
+		// HOOK: modify source item
+		if (isset($GLOBALS['TL_HOOKS']['modifyItemsAfterCollection']) && is_array($GLOBALS['TL_HOOKS']['modifyItemsAfterCollection'])) {
+			foreach ($GLOBALS['TL_HOOKS']['modifyItemsAfterCollection'] as $callback) {
+				$this->import($callback[0]);
+				$this->objItems = $this->{$callback[0]}->{$callback[1]}($this->objItems);
+			}
+		}
 
         $strClass = Model::getClassFromTable($this->dbTargetTable);
 
@@ -101,19 +109,17 @@ class ExternalImporter extends Importer
      */
     protected function getExternalData()
     {
-        $response = Curl::request($this->importUrl, [], true);
+        $response = Curl::request(html_entity_decode($this->importUrl), [], true);
         $header   = $response[0];
         $data     = $response[1];
 
         switch ($header['Content-Type']) {
-            case ImporterHelper::EXTERNAL_IMPORT_TYPE_JSON:
-                return json_decode($data);
-                break;
             case ImporterHelper::EXTERNAL_IMPORT_TYPE_XML:
                 return simplexml_load_string($data);
                 break;
-            default:
-                return null;
+			case ImporterHelper::EXTERNAL_IMPORT_TYPE_JSON:
+			default:
+				return json_decode($data);
         }
     }
 
@@ -145,23 +151,26 @@ class ExternalImporter extends Importer
             return null;
         }
 
+		// HOOK: modify source item
+		if (isset($GLOBALS['TL_HOOKS']['modifySourceItem']) && is_array($GLOBALS['TL_HOOKS']['modifySourceItem'])) {
+			foreach ($GLOBALS['TL_HOOKS']['modifySourceItem'] as $callback) {
+				$this->import($callback[0]);
+				$sourceItem = $this->{$callback[0]}->{$callback[1]}($sourceItem);
+			}
+		}
+
+		if(null === $sourceItem) {
+			return null;
+		}
+
         if ($this->arrData['addMerge']) {
-            $item           = $this->findExistingModelInstanceForMerge($sourceItem);
+            $item           = $this->findExistingModelInstanceForMerge((array)$sourceItem);
             $this->isMerged = true;
         }
 
         if (null === $item) {
             $item         = new $class();
             $this->setDefaults($item);
-        }
-
-
-        // HOOK: modify source item
-        if (isset($GLOBALS['TL_HOOKS']['modifySourceItem']) && is_array($GLOBALS['TL_HOOKS']['modifySourceItem'])) {
-            foreach ($GLOBALS['TL_HOOKS']['modifySourceItem'] as $callback) {
-                $this->import($callback[0]);
-                $sourceItem = $this->{$callback[0]}->{$callback[1]}($sourceItem);
-            }
         }
 
         foreach ($this->externalFieldMapping as $mapping) {
@@ -212,9 +221,9 @@ class ExternalImporter extends Importer
      * @param $sourceItem
      * @return Model|null
      */
-    public function findExistingModelInstanceForMerge($sourceItem)
+    public function findExistingModelInstanceForMerge(array $sourceItem)
     {
-        $identifierFields = StringUtil::deserialize($this->mergeIdentifierFields, true);
+        $identifierFields = deserialize($this->mergeIdentifierFields, true);
 
         if (empty($identifierFields)) {
             return null;
@@ -225,7 +234,7 @@ class ExternalImporter extends Importer
 
         foreach ($identifierFields as $fieldData) {
             $columns[] = $this->dbTargetTable . '.' . $fieldData['target'] . '=?';
-            $values[]  = $sourceItem->{$fieldData['source']};
+            $values[]  = $sourceItem[$fieldData['source']];
         }
 
         $strItemClass = Model::getClassFromTable($this->dbTargetTable);
