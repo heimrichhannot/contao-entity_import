@@ -4,7 +4,7 @@ namespace HeimrichHannot\EntityImport;
 
 use Doctrine\DBAL\DriverManager;
 
-class Database extends \Database
+abstract class Database extends \Database
 {
     /**
      * Establish the database connection
