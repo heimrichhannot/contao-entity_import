@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.4.3] - 2020-01-21
+
+### Added
+- hook after import was completed 
+
 ## [1.4.2] - 2018-11-22
 
 ### Fixed

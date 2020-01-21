@@ -827,6 +827,13 @@ class Importer extends \Backend
 
     protected function runAfterComplete($objItems)
     {
+        // HOOK: after import completed
+        if (isset($GLOBALS['TL_HOOKS']['runAfterCompleteImport']) && is_array($GLOBALS['TL_HOOKS']['runAfterCompleteImport'])) {
+            foreach ($GLOBALS['TL_HOOKS']['runAfterCompleteImport'] as $callback) {
+                $this->import($callback[0]);
+                $this->{$callback[0]}->{$callback[1]}($objItems);
+            }
+        }
     }
 
     /**
